@@ -22,7 +22,8 @@ public class LoginPage extends BasePage {
     public LoginPage(WebDriver driver) {
         super();
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));}
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
 
     public void enterEmailLogin(String email) {
         // Gunakan explicit wait agar script tidak "terburu-buru"
