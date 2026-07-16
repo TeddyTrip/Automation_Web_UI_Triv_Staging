@@ -2,24 +2,13 @@ package steps;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
-import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import pages.dashboard.DashboardPage;
 import pages.buy.BuyDashboardPage;
 import pages.buy.BuyConfirmationPage;
 import pages.buy.BuyHistoryStatement;
 import pages.buy.BuyInputAmountPage;
 import src.test.java.driver.DriverManager;
-import utils.*;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BuyAssetSteps {
 
@@ -35,7 +24,7 @@ public class BuyAssetSteps {
         
 
         for (Map<String, String> row : data) {
-            dashboardPage.clickBuyIconOnDashboard();
+            dashboardPage.clickBuySellIconOnDashboard();
             
             // row.get("Code") akan mengambil nilai dari kolom "Code" di tabel feature
             String code = row.get("Code");

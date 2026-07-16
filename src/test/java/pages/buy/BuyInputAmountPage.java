@@ -11,7 +11,7 @@ public class BuyInputAmountPage extends BasePage {
     private WebDriver driver;
     private WebDriverWait wait;
     
-    private By amountInputField = By.id("amount_2");
+    private By amountIdrBuyInputField = By.id("amount_2");
     private By btnLanjut = By.id("link_to_buy_3");
 
     public BuyInputAmountPage(WebDriver driver) {
@@ -21,7 +21,7 @@ public class BuyInputAmountPage extends BasePage {
     }
 
     public void inputAmountInIDR(String amount) {
-        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountInputField));
+        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountIdrBuyInputField));
         amountInput.clear();
         amountInput.sendKeys(amount);
     }
