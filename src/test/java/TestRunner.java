@@ -11,7 +11,8 @@ import org.junit.runner.RunWith;
         "html:target/cucumber-reports/report.html",
         "json:target/cucumber-reports/report.json"
     },
-    tags = "@SellFlowLengkap", // Hanya jalankan scenario dengan tag ini
+    tags = 
+    "@BuyFlowLengkap", // Hanya jalankan scenario dengan tag ini
     monochrome = true
 )
 public class TestRunner {

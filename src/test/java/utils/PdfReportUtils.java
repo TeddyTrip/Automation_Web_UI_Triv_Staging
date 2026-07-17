@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PdfReportUtil {
+public class PdfReportUtils {
 
     private static String reportName;
     private static String folderPath = "src/test/java/report/";

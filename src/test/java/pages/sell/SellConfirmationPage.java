@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import utils.PdfReportUtil;
+import utils.PdfReportUtils;
 
 public class SellConfirmationPage {
     private WebDriver driver;

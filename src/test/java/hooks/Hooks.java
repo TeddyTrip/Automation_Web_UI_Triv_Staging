@@ -5,7 +5,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import src.test.java.driver.DriverManager;
 import utils.ConfigReader;
-import utils.PdfReportUtil;
+import utils.PdfReportUtils;
 import utils.ReportingUtils;
 
 public class Hooks {
@@ -19,7 +19,7 @@ public class Hooks {
         String cleanFileName = fileName.replace(".feature", "");
 
         // Mulai penulisan laporan
-        PdfReportUtil.startPdfReport(cleanFileName);
+        PdfReportUtils.startPdfReport(cleanFileName);
         
         // Hooks hanya perlu "memanggil" saja. 
         // Urusan "bagaimana cara membuka browser" sudah diurus oleh DriverManager.
@@ -37,7 +37,7 @@ public class Hooks {
         boolean isLandscape = orientation != null && orientation.equalsIgnoreCase("landscape");
         
         // Buat dan simpan file PDF
-        PdfReportUtil.finishPdfReport(isLandscape);
+        PdfReportUtils.finishPdfReport(isLandscape);
 
     if (scenario.isFailed()) {
         // Buat nama file unik berdasarkan nama scenario
