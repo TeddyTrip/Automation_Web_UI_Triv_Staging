@@ -5,7 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import utils.PdfReportUtil;
+import utils.PdfReportUtils;
 
 import java.time.Duration;
 
@@ -30,7 +30,7 @@ public class LoginPage extends BasePage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(emailField)).sendKeys(email);
 
         // Cetak laporan ke PDF
-        PdfReportUtil.addStepToReport(
+        PdfReportUtils.addStepToReport(
             driver, 
             "Given Memasukkan email dari variabel global", // Test Case Gherkin
             "Berhasil menginput email: " + email,          // Note / Console Log
@@ -43,7 +43,7 @@ public class LoginPage extends BasePage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(passField)).sendKeys(password);
         
         // Cetak laporan ke PDF
-        PdfReportUtil.addStepToReport(
+        PdfReportUtils.addStepToReport(
             driver, 
             "Given Memasukkan password dari variabel global", // Test Case Gherkin
             "Berhasil menginput password: " + password,    // Note / Console Log
@@ -55,7 +55,7 @@ public class LoginPage extends BasePage {
 
     public void clickMasukButtonLogin() { 
         // Cetak laporan SEBELUM pindah halaman (agar tombolnya kelihatan)
-        PdfReportUtil.addStepToReport(
+        PdfReportUtils.addStepToReport(
             driver, 
             "And Menekan tombol Masuk", 
             "Berhasil menekan tombol login", 
@@ -69,7 +69,7 @@ public class LoginPage extends BasePage {
     public void inputOtp(String otp) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(otpField)).sendKeys(otp);
         
-        PdfReportUtil.addStepToReport(
+        PdfReportUtils.addStepToReport(
             driver, 
             "And Menyelesaikan proses TwoFA jika diminta", // Sesuaikan dengan text Gherkin Anda
             "Berhasil menginput kode OTP 2FA: " + otp,     // Note / Console Log

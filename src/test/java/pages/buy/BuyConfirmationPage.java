@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.BasePage;
-import utils.PdfReportUtil;
+import utils.PdfReportUtils;
 import org.openqa.selenium.TimeoutException;
 
 
@@ -32,7 +32,7 @@ public class BuyConfirmationPage extends BasePage {
             alert.accept(); // Klik OK
             
             // Catat ke PDF bahwa gagal karena market tutup
-            PdfReportUtil.addStepToReport(driver, "Konfirmasi Transaksi", "Market Tutup (Alert Ditangani)", "FAILED");
+            PdfReportUtils.addStepToReport(driver, "Konfirmasi Transaksi", "Market Tutup (Alert Ditangani)", "FAILED");
             
             return false; // Beritahu Steps bahwa transaksi GAGAL
         } catch (Exception e) {
