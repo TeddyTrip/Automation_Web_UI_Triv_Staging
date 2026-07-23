@@ -36,17 +36,17 @@ public class Hooks {
         // Tentukan orientasi
         boolean isLandscape = orientation != null && orientation.equalsIgnoreCase("landscape");
         
-        // Buat dan simpan file PDF
-        PdfReportUtils.finishPdfReport(isLandscape);
+        // // Buat dan simpan file PDF
+        // PdfReportUtils.finishPdfReport(isLandscape);
 
-    if (scenario.isFailed()) {
-        // Buat nama file unik berdasarkan nama scenario
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        String path = "target/reports/failed-" + scenario.getName() + "-" + timestamp + ".pdf";
-        
-        // Simpan halaman sebagai PDF saat gagal
-        ReportingUtils.savePageAsPdf(DriverManager.getDriver(), path);
+        // if (scenario.isFailed()) {
+        //     // Buat nama file unik berdasarkan nama scenario
+        //     String timestamp = String.valueOf(System.currentTimeMillis());
+        //     String path = "target/reports/failed-" + scenario.getName() + "-" + timestamp + ".pdf";
+            
+        //     // Simpan halaman sebagai PDF saat gagal
+        //     ReportingUtils.savePageAsPdf(DriverManager.getDriver(), path);
+        // }
+        DriverManager.quitDriver();
     }
-    DriverManager.quitDriver();
-}
 }

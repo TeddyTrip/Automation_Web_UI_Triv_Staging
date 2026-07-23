@@ -11,6 +11,7 @@ import src.test.java.driver.DriverManager;
 import utils.CsvDataManager;
 import utils.CsvUtils;
 import context.ScenarioContext;
+import formula.MinimalBuyAssetSpotCalculation;
 
 import java.util.*;
 
@@ -21,6 +22,7 @@ public class BuyAssetSteps {
     BuyHistoryStatement buyHistoryStatement = new BuyHistoryStatement(DriverManager.getDriver());
     BuyDashboardPage buyDashboardPage = new BuyDashboardPage(DriverManager.getDriver());
     BuyInputAmountPage buyInputAmountPage = new BuyInputAmountPage(DriverManager.getDriver());
+    MinimalBuyAssetSpotCalculation minimalBuyAssetSpotCalculation = new MinimalBuyAssetSpotCalculation();
     
     ScenarioContext context = new ScenarioContext();
     CsvUtils csvUtils = new CsvUtils();
@@ -36,12 +38,11 @@ public class BuyAssetSteps {
             // row.get("Code") akan mengambil nilai dari kolom "Code" di tabel feature
             String code = row.get("Code");
             String category = row.get("Category");
-            String amount = row.get("Amount");
 
             // Sekarang kita panggil method-nya dengan data tersebut
             buyDashboardPage.selectCategory(category);
             buyDashboardPage.selectAssetByCode(code);
-            buyInputAmountPage.inputAmountInIDR(amount);
+            buyInputAmountPage.inputAmountInIDR(code);
 
             buyInputAmountPage.clickLanjutButton();
 
@@ -87,14 +88,13 @@ public class BuyAssetSteps {
             String code = row.get("Code");
             String market_service = row.get("Market_Service");
             String category = row.get("Category");
-            String amount = row.get("Amount");
 
-            System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category + " | Amount: " + amount);
+            System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
             
             // Sekarang kita panggil method-nya dengan data tersebut
             buyDashboardPage.selectCategory(category);
             buyDashboardPage.selectAssetByCode(code);
-            buyInputAmountPage.inputAmountInIDR(amount);
+            buyInputAmountPage.inputAmountInIDR(code);
 
             buyInputAmountPage.clickLanjutButton();
 

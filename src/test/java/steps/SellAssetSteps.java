@@ -86,7 +86,6 @@ public class SellAssetSteps {
                 }
             }
             // 3. Jika "SUCCESS" atau tidak ada snackbar, lanjut ke proses konfirmasi
-
             
         }
     }
