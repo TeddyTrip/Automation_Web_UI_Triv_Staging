@@ -1,69 +1,72 @@
 package steps;
 
-import pages.dashboard.DashboardPage;
-import pages.sell.SellConfirmationPage;
-import pages.sell.SellDashboardPage;
-import pages.sell.SellHistoryStatement;
-import pages.sell.SellInputAmountPage;
+import java.util.List;
+import java.util.Map;
 
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.And;
+import pages.BasePage;
+import pages.dashboard.DashboardPage;
+import pages.swap.SwapDashboardPage;
+import pages.swap.SwapHistoryStatementPage;
 import src.test.java.driver.DriverManager;
-import java.util.*;
+import pages.swap.SwapInputAmountPage;
+import pages.swap.SwapConfirmationPage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class SellAssetSteps {
+public class SwapAssetSteps extends BasePage {
     
     DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver());
-    SellConfirmationPage sellConfirmationPage = new SellConfirmationPage(DriverManager.getDriver());
-    SellDashboardPage sellDashboardPage = new SellDashboardPage(DriverManager.getDriver());
-    SellHistoryStatement sellHistoryStatement = new SellHistoryStatement(DriverManager.getDriver());
-    SellInputAmountPage sellInputAmountPage = new SellInputAmountPage(DriverManager.getDriver());
+    SwapDashboardPage swapDashboardPage = new SwapDashboardPage(DriverManager.getDriver());
+    SwapInputAmountPage swapInputAmountPage = new SwapInputAmountPage(DriverManager.getDriver());
+    SwapConfirmationPage swapConfirmationPage = new SwapConfirmationPage(DriverManager.getDriver());
+    SwapHistoryStatementPage swapHistoryStatementPage = new SwapHistoryStatementPage(DriverManager.getDriver());
 
-    private static final Logger logger = LoggerFactory.getLogger(SellAssetSteps.class);
-
-    @And("Menjual aset secara custom")
-    public void menjual_asset_custom(DataTable dataTable) {
+    @And("Swap aset secara custom")
+    public void swap_asset_custom(DataTable dataTable) {
         List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
 
         for (Map<String, String> row : data) {
             dashboardPage.clickBuySellIconOnDashboard();
-            sellDashboardPage.clickSellIconOnDashboard();
+            dashboardPage.clickSwapIconOnDashboard();
 
             // row.get("Code") akan mengambil nilai dari kolom "Code" di tabel feature
-            String code = row.get("Code");
-            String category = row.get("Category");
+            String codeFrom = row.get("Code From");
+            String codeTo = row.get("Code To");
+            String categoryFrom = row.get("Category From");
+            String categoryTo = row.get("Category To");
             String amount = row.get("Amount");
 
             // Sekarang kita panggil method-nya dengan data tersebut
-            sellDashboardPage.selectCategory(category);
-            sellDashboardPage.selectAssetByCode(code);
-            sellInputAmountPage.inputIdrAmount(amount); // Tambahkan ini jika ada input untuk IDR
+            swapDashboardPage.selectCategory(categoryTo);
+            swapDashboardPage.selectAssetByCode(codeTo);
 
-            sellInputAmountPage.clickLanjutButton();
+            swapInputAmountPage.clickComboboxListWallet();
+            swapInputAmountPage.getSearchboxComboboxListWallet(codeFrom);
+
+            swapInputAmountPage.inputAmountAssetTo(amount, codeTo);
+
+            swapInputAmountPage.clickLanjutButton();
 
             // Tambahkan sleep singkat untuk memberi waktu snackbar muncul
             try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 
             // --- VALIDATION LOGIC ---
-            String validationMessage = sellInputAmountPage.getValidationMessage();
+            String validationMessage = swapInputAmountPage.getValidationMessage();
             System.out.println("Pesan validasi yang diterima: " + validationMessage);
 
-            // 1. Jika Minimum Sell, ambil angkanya, input ulang, dan lanjut
-            if (validationMessage.contains("Minimum sell")) {
+            // 1. Jika Minimum Swap, ambil angkanya, input ulang, dan lanjut
+            if (validationMessage.contains("Minimum swap")) {
                 System.out.println("Pesan validasi terdeteksi: " + validationMessage);
                 
                 // Regex: Mengganti semua karakter KECUALI angka (0-9) dan titik (.) dengan string kosong
-                // Contoh: "Minimum sell is 0.00003849 BTC" -> "0.00003849"
+                // Contoh: "Minimum swap is 0.00003849 BTC" -> "0.00003849"
                 String minAmount = validationMessage.replaceAll("[^0-9.]", "");
                 
                 System.out.println("Nilai minimum yang diekstrak: " + minAmount);
 
                 if (!minAmount.isEmpty()) {
-                    sellInputAmountPage.inputAssetAmount(minAmount);
-                    sellInputAmountPage.clickLanjutButton();
+                    swapInputAmountPage.inputAssetAmount(minAmount);
+                    swapInputAmountPage.clickLanjutButton();
                 } else {
                     System.out.println("Gagal mengekstrak nilai minimum dari pesan. Skip aset.");
                     continue; // Melewati aset ini jika ekstraksi gagal
@@ -76,10 +79,10 @@ public class SellAssetSteps {
             }
             else {
                     // --- PROCEED TO CONFIRMATION ---
-                boolean isTransactionSuccess = sellConfirmationPage.clickKonfirmasiButton();
+                boolean isTransactionSuccess = swapConfirmationPage.clickKonfirmasiButton();
 
                 if (isTransactionSuccess) {
-                    sellHistoryStatement.clickDoneButtonHistoryStatement();
+                    swapHistoryStatementPage.clickDoneButtonHistoryStatement();
                 } else {
                     System.out.println("Transaksi untuk " + code + " gagal saat konfirmasi.");
                     continue; // Lanjut ke aset berikutnya
@@ -89,4 +92,5 @@ public class SellAssetSteps {
             
         }
     }
+
 }

@@ -37,4 +37,36 @@ public class InstallCoinLists {
         }
         return null; // Atau handle error jika tidak ketemu
     }
+
+    public double getMinimalBuyPriceFromApi(String code) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new URL("https://cihuy.triv.id/api/v1/install/coin/lists"));
+            
+            for (JsonNode coin : root) {
+                if (coin.get("code").asText().equalsIgnoreCase(code)) {
+                    return coin.get("buy").asDouble(); // Mengembalikan "Bitcoin", "Ethereum", dll
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Gagal memanggil API: " + e.getMessage());
+        }
+        return 0.0; // Atau handle error jika tidak ketemu
+    }
+
+    public double getMinimalSellPriceFromApi(String code) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new URL("https://cihuy.triv.id/api/v1/install/coin/lists"));
+            
+            for (JsonNode coin : root) {
+                if (coin.get("code").asText().equalsIgnoreCase(code)) {
+                    return coin.get("sell").asDouble(); // Mengembalikan "Bitcoin", "Ethereum", dll
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Gagal memanggil API: " + e.getMessage());
+        }
+        return 0.0; // Atau handle error jika tidak ketemu
+    }
 }
