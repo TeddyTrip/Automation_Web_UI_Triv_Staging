@@ -11,12 +11,12 @@ Feature: Pembelian Asset Custom
   @BuyFlowLengkap
   Scenario: Beli Beberapa Asset Custom
     And Membeli aset secara custom
-      | Code | Category | Amount |
-      | SPYX  | crypto   | 50000  |
-      | MSFTON  | crypto   | 50000 |
-      | SLVON  | gold   | 50000  |
-      | USOON  | oil   | 50000 |
-      | COPXON  | stocks   | 50000 |
+      | Code | Category |
+      | BTC  | crypto |
+      | ETH  | crypto |
+      | PAXG  | gold |
+      | USDT | usd |
+      | EURS  | euro |
     Then Masuk di Dashboard Triv Staging
 
     #mvn test "-Dcucumber.options=--tags @BuyFlowCSV"

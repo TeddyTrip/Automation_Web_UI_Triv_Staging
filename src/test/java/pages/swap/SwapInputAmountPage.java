@@ -66,22 +66,22 @@ public class SwapInputAmountPage extends BasePage {
 }
 
     public void inputAmountAssetTo(String idrAmount, String codeTo) {
-        // 1. Ambil harga dari API (Behind the scenes)
-        double buyPrice = installCoinLists.getMinimalBuyPriceFromApi(codeTo);
+        // // 1. Ambil harga dari API (Behind the scenes)
+        // double buyPrice = installCoinLists.getMinimalBuyPriceFromApi(codeTo);
         
-        // 2. Kalkulasi (Behind the scenes)
-        double amountIdr = Double.parseDouble(idrAmount);
-        double calculatedAsset = amountIdr / buyPrice;
+        // // 2. Kalkulasi (Behind the scenes)
+        // double amountIdr = Double.parseDouble(idrAmount);
+        // double calculatedAsset = amountIdr / buyPrice;
         
-        // 3. Formatting (Misal 8 digit di belakang koma)
-        String finalAmount = String.format("%.8f", calculatedAsset);
+        // // 3. Formatting (Misal 8 digit di belakang koma)
+        // String finalAmount = String.format("%.8f", calculatedAsset);
         
-        // 4. Input ke UI
-        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
-        amountInput.clear();
-        amountInput.sendKeys(finalAmount);
+        // // 4. Input ke UI
+        // var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
+        // amountInput.clear();
+        // amountInput.sendKeys(finalAmount);
         
-        System.out.println("Auto-calculated " + idrAmount + " IDR to " + finalAmount + " " + codeTo);
+        // System.out.println("Auto-calculated " + idrAmount + " IDR to " + finalAmount + " " + codeTo);
     }
 
     
