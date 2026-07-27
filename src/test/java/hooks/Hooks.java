@@ -18,8 +18,8 @@ public class Hooks {
         String fileName = featurePath.substring(featurePath.lastIndexOf('/') + 1);
         String cleanFileName = fileName.replace(".feature", "");
 
-        // Mulai penulisan laporan
-        PdfReportUtils.startPdfReport(cleanFileName);
+        // // Mulai penulisan laporan
+        // PdfReportUtils.startPdfReport(cleanFileName);
         
         // Hooks hanya perlu "memanggil" saja. 
         // Urusan "bagaimana cara membuka browser" sudah diurus oleh DriverManager.
