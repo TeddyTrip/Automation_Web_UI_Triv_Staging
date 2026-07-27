@@ -15,5 +15,5 @@ Feature: Penjualan Asset Custom
       | BTC  | crypto   | 5000  |
       | XAUT  | gold     | 60000 |
       | USO  | oil      | 7500000  |
-      | USDT  | usd      | 7500000  |
+      | EXE  | stocks      | 7500000  |
     Then Masuk di Dashboard Triv Staging

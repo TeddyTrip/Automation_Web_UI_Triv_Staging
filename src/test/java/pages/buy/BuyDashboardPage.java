@@ -46,51 +46,51 @@ public class BuyDashboardPage {
     }
 
     public void selectAssetByCode(String code) {
-    // 1. Dapatkan expected v_money dari API, lalu ubah ke huruf kecil (lowercase)
-    String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
-    
-    Assert.assertNotNull("Gagal mendapatkan v_money dari API untuk code: " + code, expectedVMoney);
-    
-    String targetVMoney = expectedVMoney.toLowerCase();
-    System.out.println("Expected v_money dari API (lowercase): " + targetVMoney);
+        // 1. Dapatkan expected v_money dari API, lalu ubah ke huruf kecil (lowercase)
+        String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
+        
+        Assert.assertNotNull("Gagal mendapatkan v_money dari API untuk code: " + code, expectedVMoney);
+        
+        String targetVMoney = expectedVMoney.toLowerCase();
+        System.out.println("Expected v_money dari API (lowercase): " + targetVMoney);
 
-    // 2. Klik icon pencarian
-    wait.until(ExpectedConditions.elementToBeClickable(searchRectangleIcon)).click();
-    
-    // 3. Input code ke search box
-    WebElement search = wait.until(ExpectedConditions.elementToBeClickable(searchBox));
-    search.clear();
-    search.sendKeys(code, Keys.ENTER);
-    
-    
-    // 4. BUAT XPATH BERDASARKAN DATA-V-MONEY (HURUF KECIL)
-    // Mencari elemen <li> yang di dalamnya memiliki <span> dengan atribut data-v-money persis bernilai targetVMoney
-    String xpath = String.format("//li[.//span[@data-v-money='%s']]", targetVMoney);
-    By assetLocator = By.xpath(xpath);
-    
-    // Tunggu elemen muncul
-    WebElement liElement = wait.until(ExpectedConditions.presenceOfElementLocated(assetLocator));
-    
-    // 5. AMBIL DAN VERIFIKASI HANYA ATRIBUT DATA-V-MONEY (DIUBAH KE HURUF KECIL)
-    WebElement spanElement = liElement.findElement(By.xpath(".//span[@data-v-money]"));
-    String actualVMoneyAttribute = spanElement.getAttribute("data-v-money").toLowerCase();
-    
-    System.out.println("Actual data-v-money di UI (lowercase): " + actualVMoneyAttribute);
-    
-    // Lakukan Assertion murni berdasarkan data-v-money lowercase (mengabaikan teks isi span)
-    Assert.assertEquals(
-        "Atribut data-v-money pada UI tidak sesuai dengan response API!", 
-        targetVMoney, 
-        actualVMoneyAttribute
-    );
+        // 2. Klik icon pencarian
+        wait.until(ExpectedConditions.elementToBeClickable(searchRectangleIcon)).click();
+        
+        // 3. Input code ke search box
+        WebElement search = wait.until(ExpectedConditions.elementToBeClickable(searchBox));
+        search.clear();
+        search.sendKeys(code, Keys.ENTER);
+        
+        
+        // 4. BUAT XPATH BERDASARKAN DATA-V-MONEY (HURUF KECIL)
+        // Mencari elemen <li> yang di dalamnya memiliki <span> dengan atribut data-v-money persis bernilai targetVMoney
+        String xpath = String.format("//li[.//span[@data-v-money='%s']]", targetVMoney);
+        By assetLocator = By.xpath(xpath);
+        
+        // Tunggu elemen muncul
+        WebElement liElement = wait.until(ExpectedConditions.presenceOfElementLocated(assetLocator));
+        
+        // 5. AMBIL DAN VERIFIKASI HANYA ATRIBUT DATA-V-MONEY (DIUBAH KE HURUF KECIL)
+        WebElement spanElement = liElement.findElement(By.xpath(".//span[@data-v-money]"));
+        String actualVMoneyAttribute = spanElement.getAttribute("data-v-money").toLowerCase();
+        
+        System.out.println("Actual data-v-money di UI (lowercase): " + actualVMoneyAttribute);
+        
+        // Lakukan Assertion murni berdasarkan data-v-money lowercase (mengabaikan teks isi span)
+        Assert.assertEquals(
+            "Atribut data-v-money pada UI tidak sesuai dengan response API!", 
+            targetVMoney, 
+            actualVMoneyAttribute
+        );
 
-    // 6. Scroll dan Klik elemen yang valid
-    JavascriptExecutor js = (JavascriptExecutor) driver;
-    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", liElement);
-    
-    try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-    
-    js.executeScript("arguments[0].click();", liElement);
+        // 6. Scroll dan Klik elemen yang valid
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", liElement);
+        
+        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+        
+        js.executeScript("arguments[0].click();", liElement);
 
 
 
