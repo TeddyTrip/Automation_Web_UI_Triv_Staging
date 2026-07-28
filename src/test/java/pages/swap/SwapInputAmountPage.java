@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import api.InstallCoinLists;
+import formula.MinimalBuySellAssetSpotCalculation;
 
 import pages.BasePage;
 
@@ -17,6 +18,7 @@ public class SwapInputAmountPage extends BasePage {
     private WebDriverWait wait;
 
     InstallCoinLists installCoinLists = new InstallCoinLists();
+    MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation()
 
     private By searchBoxListWallet = By.className("select2-search__field");
     private By amountAssetFromInputField = By.id("amount_2");
@@ -65,7 +67,9 @@ public class SwapInputAmountPage extends BasePage {
     }
 }
 
-    public void inputAmountAssetTo(String idrAmount, String codeTo) {
+    public void inputAmountAssetTo(String codeTo) {
+        String amountInIDR = minimalBuySellAssetSpotCalculation.getMinimalSellPriceWithCertainCalculation(code);
+        
         // 1. Ambil harga dari API (Behind the scenes)
         double buyPrice = installCoinLists.getMinimalBuyPriceFromApi(codeTo);
         

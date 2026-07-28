@@ -65,7 +65,7 @@ public class SwapAssetSteps extends BasePage {
                 System.out.println("Nilai minimum yang diekstrak: " + minAmount);
 
                 if (!minAmount.isEmpty()) {
-                    swapInputAmountPage.inputAssetAmount(minAmount);
+                    swapInputAmountPage.inputAmountAssetTo(amount, codeTo);
                     swapInputAmountPage.clickLanjutButton();
                 } else {
                     System.out.println("Gagal mengekstrak nilai minimum dari pesan. Skip aset.");
