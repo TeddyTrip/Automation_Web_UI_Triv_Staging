@@ -7,21 +7,23 @@ Feature: Pembelian Asset Custom
     And Menekan tombol Masuk
     And Menyelesaikan proses TwoFA jika diminta
 
-  #mvn test "-Dcucumber.options=--tags @BuyFlowLengkap"
-  @BuyFlowLengkap
-  Scenario: Beli Beberapa Asset Custom
-    And Membeli aset secara custom
-      | Code | Category | Amount |
-      | SPYX  | crypto   | 50000  |
-      | MSFTON  | crypto   | 50000 |
-      | SLVON  | gold   | 50000  |
-      | USOON  | oil   | 50000 |
-      | COPXON  | stocks   | 50000 |
+    #mvn test "-Dcucumber.options=--tags @BuyFlowLengkap"
+    @BuyFlowLengkap
+    Scenario: Beli Beberapa Asset Custom
+      And Membeli aset secara custom
+        | Code | Category |
+        | BTC  | crypto |
+        | ETH  | crypto |
+        | PAXG  | gold |
+        | USDT | usd |
+        | EURS  | euro |
     Then Masuk di Dashboard Triv Staging
 
     #mvn test "-Dcucumber.options=--tags @BuyFlowCSV"
     @BuyFlowCSV
     Scenario: Beli Beberapa Asset Custom via CSV
-    Given Menjalankan flow "buy" dengan data "buy-assets"
+    Given Menjalankan flow "buy" dengan data "buy-assets" untuk buy
     And Membeli aset secara custom menggunakan data CSV
     Then Masuk di Dashboard Triv Staging
+
+    
