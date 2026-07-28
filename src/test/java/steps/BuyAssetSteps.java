@@ -11,7 +11,7 @@ import src.test.java.driver.DriverManager;
 import utils.CsvDataManager;
 import utils.CsvUtils;
 import context.ScenarioContext;
-import formula.MinimalBuyAssetSpotCalculation;
+import formula.MinimalBuySellAssetSpotCalculation;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public class BuyAssetSteps {
     BuyHistoryStatement buyHistoryStatement = new BuyHistoryStatement(DriverManager.getDriver());
     BuyDashboardPage buyDashboardPage = new BuyDashboardPage(DriverManager.getDriver());
     BuyInputAmountPage buyInputAmountPage = new BuyInputAmountPage(DriverManager.getDriver());
-    MinimalBuyAssetSpotCalculation minimalBuyAssetSpotCalculation = new MinimalBuyAssetSpotCalculation();
+    MinimalBuySellAssetSpotCalculation minimalBuyAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
     
     ScenarioContext context = new ScenarioContext();
     CsvUtils csvUtils = new CsvUtils();
@@ -42,7 +42,7 @@ public class BuyAssetSteps {
             // Sekarang kita panggil method-nya dengan data tersebut
             buyDashboardPage.selectCategory(category);
             buyDashboardPage.selectAssetByCode(code);
-            buyInputAmountPage.inputAmountInIDR(code);
+            buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
 
             buyInputAmountPage.clickLanjutButton();
 
@@ -63,8 +63,8 @@ public class BuyAssetSteps {
     }
 
     
-    @Given("Menjalankan flow {string} dengan data {string}")
-    public void load_data_dinamis(String flow, String file) throws Exception {
+    @Given("Menjalankan flow {string} dengan data {string} untuk buy")
+    public void load_data_dinamis_buy(String flow, String file) throws Exception {
         // 1. Dapatkan path lengkap (contoh: src/test/resources/data/buy/buy-assets.csv)
         String path = CsvDataManager.getPath(flow, file);
         
@@ -94,7 +94,7 @@ public class BuyAssetSteps {
             // Sekarang kita panggil method-nya dengan data tersebut
             buyDashboardPage.selectCategory(category);
             buyDashboardPage.selectAssetByCode(code);
-            buyInputAmountPage.inputAmountInIDR(code);
+            buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
 
             buyInputAmountPage.clickLanjutButton();
 
@@ -111,5 +111,11 @@ public class BuyAssetSteps {
             }
         }
     }
+
+
+
+
+
+
 }
 

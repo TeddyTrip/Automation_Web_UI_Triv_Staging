@@ -22,7 +22,7 @@ Feature: Pembelian Asset Custom
     #mvn test "-Dcucumber.options=--tags @BuyFlowCSV"
     @BuyFlowCSV
     Scenario: Beli Beberapa Asset Custom via CSV
-    Given Menjalankan flow "buy" dengan data "buy-assets"
+    Given Menjalankan flow "buy" dengan data "buy-assets" untuk buy
     And Membeli aset secara custom menggunakan data CSV
     Then Masuk di Dashboard Triv Staging
 

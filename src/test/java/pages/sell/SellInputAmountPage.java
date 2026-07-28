@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import formula.MinimalBuySellAssetSpotCalculation;
 import pages.BasePage;
 
 public class SellInputAmountPage extends BasePage {
@@ -26,6 +27,8 @@ public class SellInputAmountPage extends BasePage {
 
     private By warningMessage = By.cssSelector("div.snackbar li");
 
+    MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
+
     public SellInputAmountPage(WebDriver driver) {
         super();
         this.driver = driver;
@@ -33,7 +36,7 @@ public class SellInputAmountPage extends BasePage {
     }
 
     public void inputAssetAmount(String amount) {
-        WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+    WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(15));
 
     // 1. Cari semua elemen input dengan class yang sama (menggunakan CSS class selector)
     // Gunakan titik (.) untuk class. Class dari snippet Anda: value, text-size-14, text-color-white, currency, valid
@@ -84,57 +87,62 @@ public class SellInputAmountPage extends BasePage {
     }
     }
 
-    public void inputIdrAmount(String amount) {
-    WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+    public void inputAmountInIDRUsingMinimumSellTransaction(String code) {
+        String amountInIDR = minimalBuySellAssetSpotCalculation.getMinimalSellPriceWithCertainCalculation(code);
 
-    // 1. Cari semua elemen input dengan class yang sama (menggunakan CSS class selector)
-    // Gunakan titik (.) untuk class. Class dari snippet Anda: value, text-size-14, text-color-white, currency, valid
-    // Kita pakai class yang paling unik, yaitu "value" dan "currency"
-    By inputLocator = By.cssSelector("input.value.currency");
-    
-    // 2. Tunggu sampai minimal ada 1 elemen yang muncul
-    List<WebElement> inputs = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(inputLocator));
-    
-    System.out.println("Jumlah input ditemukan: " + inputs.size());
-
-    WebElement targetField = null;
-
-    // 3. Debugging: Cetak ID masing-masing elemen yang ditemukan
-    for (int i = 0; i < inputs.size(); i++) {
-        String id = inputs.get(i).getAttribute("id");
-        System.out.println("Input ke-" + i + " memiliki ID: " + id);
+        String finalAmount = String.format("%.0f", Double.parseDouble(amountInIDR));
         
-        // Asumsi: Anda butuh amount_2 (sesuaikan jika butuh yang lain)
-        if (id.equals(amountIdrSellInputField.toString().replace("By.id: ", ""))) {
-            targetField = inputs.get(i);
+        WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+
+        // 1. Cari semua elemen input dengan class yang sama (menggunakan CSS class selector)
+        // Gunakan titik (.) untuk class. Class dari snippet Anda: value, text-size-14, text-color-white, currency, valid
+        // Kita pakai class yang paling unik, yaitu "value" dan "currency"
+        By inputLocator = By.cssSelector("input.value.currency");
+        
+        // 2. Tunggu sampai minimal ada 1 elemen yang muncul
+        List<WebElement> inputs = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(inputLocator));
+        
+        System.out.println("Jumlah input ditemukan: " + inputs.size());
+
+        WebElement targetField = null;
+
+        // 3. Debugging: Cetak ID masing-masing elemen yang ditemukan
+        for (int i = 0; i < inputs.size(); i++) {
+            String id = inputs.get(i).getAttribute("id");
+            System.out.println("Input ke-" + i + " memiliki ID: " + id);
+            
+            // Asumsi: Anda butuh amount_2 (sesuaikan jika butuh yang lain)
+            if (id.equals(amountIdrSellInputField.toString().replace("By.id: ", ""))) {
+                targetField = inputs.get(i);
+            }
+        }
+
+        // 4. Eksekusi
+        if (targetField != null) {
+            
+            // Wait sampai bisa diklik
+            wait.until(ExpectedConditions.elementToBeClickable(targetField));
+            
+            targetField.clear();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            targetField.sendKeys(finalAmount);
+
+            try {
+                Thread.sleep(1000); // Tambahkan jeda 1 detik agar input bisa diproses
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        } 
+        else {
+            throw new RuntimeException("Elemen target tidak ditemukan di antara list input yang ada!");
         }
     }
-
-    // 4. Eksekusi
-    if (targetField != null) {
-        
-        // Wait sampai bisa diklik
-        wait.until(ExpectedConditions.elementToBeClickable(targetField));
-        
-        targetField.clear();
-
-        try {
-        Thread.sleep(1000);
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
-
-        targetField.sendKeys(amount);
-
-        try {
-        Thread.sleep(1000); // Tambahkan jeda 1 detik agar input bisa diproses
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
-    } else {
-        throw new RuntimeException("Elemen target tidak ditemukan di antara list input yang ada!");
-    }
-}
 
 
     public void clickLanjutButton() {
