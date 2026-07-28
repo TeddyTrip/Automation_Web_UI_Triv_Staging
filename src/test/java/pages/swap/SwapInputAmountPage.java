@@ -1,5 +1,8 @@
 package pages.swap;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -7,6 +10,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import api.InstallCoinDetails;
 import api.InstallCoinLists;
 import formula.MinimalBuySellAssetSpotCalculation;
 
@@ -18,7 +23,8 @@ public class SwapInputAmountPage extends BasePage {
     private WebDriverWait wait;
 
     InstallCoinLists installCoinLists = new InstallCoinLists();
-    MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation()
+    InstallCoinDetails installCoinDetails = new InstallCoinDetails();
+    MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
 
     private By searchBoxListWallet = By.className("select2-search__field");
     private By amountAssetFromInputField = By.id("amount_2");
@@ -68,24 +74,50 @@ public class SwapInputAmountPage extends BasePage {
 }
 
     public void inputAmountAssetTo(String codeTo) {
-        String amountInIDR = minimalBuySellAssetSpotCalculation.getMinimalSellPriceWithCertainCalculation(code);
+        // 1. Ambil minimal asset dari API (Behind the scenes)
+        double minimalBuyAsset = installCoinDetails.getMinimalBuyFromApi(codeTo);
+
+        double priceBuy = installCoinLists.getBuyPriceFromApi(codeTo);
+
+        double calculateMinimalBuyAssetAnd1KRupiah = 1000 / priceBuy;
+        double finalCalculation = calculateMinimalBuyAssetAnd1KRupiah + minimalBuyAsset;
+        
+        // 3. Formatting (Misal 8 digit di belakang koma)
+        String finalAmountAsset = String.format("%.8f", finalCalculation);
+        
+        // 4. Input ke UI
+        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
+        amountInput.clear();
+
+        StringSelection stringSelection = new StringSelection(finalAmountAsset);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+        amountInput.click();
+        amountInput.sendKeys(Keys.chord(Keys.CONTROL, "v"));
+        
+        System.out.println("Minimal Asset for " + codeTo + " is " + finalAmountAsset);
+    }
+
+    public void inputAmountAssetFrom(String codeTo) {
+        String amountInIDR = minimalBuySellAssetSpotCalculation.getMinimalBuyPriceWithCertainCalculation(codeTo);
+
+        String finalAmountIDR = String.format("%.0f", Double.parseDouble(amountInIDR));
         
         // 1. Ambil harga dari API (Behind the scenes)
-        double buyPrice = installCoinLists.getMinimalBuyPriceFromApi(codeTo);
+        double sellPrice = installCoinDetails.getMinimalBuyFromApi(codeTo);
         
-        // // 2. Kalkulasi (Behind the scenes)
-        // double amountIdr = Double.parseDouble(idrAmount);
-        // double calculatedAsset = amountIdr / buyPrice;
+        // 2. Kalkulasi (Behind the scenes)
+        double amountIdr = Double.parseDouble(finalAmountIDR);
+        double calculatedAsset = amountIdr / sellPrice;
         
-        // // 3. Formatting (Misal 8 digit di belakang koma)
-        // String finalAmount = String.format("%.8f", calculatedAsset);
+        // 3. Formatting (Misal 8 digit di belakang koma)
+        String finalAmountAsset = String.format("%.8f", calculatedAsset);
         
-        // // 4. Input ke UI
-        // var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
-        // amountInput.clear();
-        // amountInput.sendKeys(finalAmount);
+        // 4. Input ke UI
+        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
+        amountInput.clear();
+        amountInput.sendKeys(finalAmountAsset);
         
-        // System.out.println("Auto-calculated " + idrAmount + " IDR to " + finalAmount + " " + codeTo);
+        System.out.println("Auto-calculated " + finalAmountIDR + " IDR to " + finalAmountAsset + " " + codeTo);
     }
 
     
