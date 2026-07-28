@@ -12,7 +12,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.JavascriptExecutor;
 
 import api.InstallCoinLists;
-import formula.MinimalBuyAssetSpotCalculation;
+import formula.MinimalBuySellAssetSpotCalculation;
 import pages.BasePage;
 
 public class BuyInputAmountPage extends BasePage {
@@ -20,7 +20,7 @@ public class BuyInputAmountPage extends BasePage {
     private WebDriverWait wait;
 
     InstallCoinLists installCoinLists = new InstallCoinLists();
-    MinimalBuyAssetSpotCalculation minimalBuyAssetSpotCalculation = new MinimalBuyAssetSpotCalculation();
+    MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
     
     private By amountIdrBuyInputField = By.id("amount_2");
     private By btnLanjut = By.id("link_to_buy_3");
@@ -31,9 +31,9 @@ public class BuyInputAmountPage extends BasePage {
         this.wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
     }
 
-    public void inputAmountInIDR(String code) {
+    public void inputAmountInIDRUsingMinimumBuyTransaction(String code) {
         // 1. Dapatkan hasil kalkulasi
-        String amountInIDR = minimalBuyAssetSpotCalculation.getMinimalBuyPriceWithCertainCalculation(code);
+        String amountInIDR = minimalBuySellAssetSpotCalculation.getMinimalBuyPriceWithCertainCalculation(code);
         
         // 2. Format angka (gunakan "%.0f" jika ingin dibulatkan tanpa angka desimal di belakang koma)
         String finalAmount = String.format("%.0f", Double.parseDouble(amountInIDR));
