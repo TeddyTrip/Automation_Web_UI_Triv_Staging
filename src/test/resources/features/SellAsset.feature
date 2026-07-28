@@ -17,3 +17,9 @@ Feature: Penjualan Asset Custom
       | USO  | oil      | 7500000  |
       | USDT  | usd      | 7500000  |
     Then Masuk di Dashboard Triv Staging
+
+  @SellFlowCSV
+    Scenario: Jual Beberapa Asset Custom via CSV
+    Given Menjalankan flow "sell" dengan data "sell-assets" untuk sell
+    And Menjual aset secara custom menggunakan data CSV
+    Then Masuk di Dashboard Triv Staging

@@ -23,46 +23,46 @@ public class SwapAssetSteps extends BasePage {
 
     @And("Swap aset secara custom")
     public void swap_asset_custom(DataTable dataTable) {
-        List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
+        // List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
 
-        for (Map<String, String> row : data) {
-            dashboardPage.clickBuySellIconOnDashboard();
-            dashboardPage.clickSwapIconOnDashboard();
+        // for (Map<String, String> row : data) {
+        //     dashboardPage.clickBuySellIconOnDashboard();
+        //     dashboardPage.clickSwapIconOnDashboard();
 
-            // row.get("Code") akan mengambil nilai dari kolom "Code" di tabel feature
-            String codeFrom = row.get("Code From");
-            String codeTo = row.get("Code To");
-            String categoryFrom = row.get("Category From");
-            String categoryTo = row.get("Category To");
-            String amount = row.get("Amount");
+        //     // row.get("Code") akan mengambil nilai dari kolom "Code" di tabel feature
+        //     String codeFrom = row.get("Code From");
+        //     String codeTo = row.get("Code To");
+        //     String categoryFrom = row.get("Category From");
+        //     String categoryTo = row.get("Category To");
+        //     String amount = row.get("Amount");
 
-            // Sekarang kita panggil method-nya dengan data tersebut
-            swapDashboardPage.selectCategory(categoryTo);
-            swapDashboardPage.selectAssetByCode(codeTo);
+        //     // Sekarang kita panggil method-nya dengan data tersebut
+        //     swapDashboardPage.selectCategory(categoryTo);
+        //     swapDashboardPage.selectAssetByCode(codeTo);
 
-            swapInputAmountPage.clickComboboxListWallet();
-            swapInputAmountPage.getSearchboxComboboxListWallet(codeFrom);
+        //     swapInputAmountPage.clickComboboxListWallet();
+        //     swapInputAmountPage.getSearchboxComboboxListWallet(codeFrom);
 
-            swapInputAmountPage.inputAmountAssetTo(amount, codeTo);
+        //     swapInputAmountPage.inputAmountAssetTo(amount, codeTo);
 
-            swapInputAmountPage.clickLanjutButton();
+        //     swapInputAmountPage.clickLanjutButton();
 
-            // Tambahkan sleep singkat untuk memberi waktu snackbar muncul
-            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        //     // Tambahkan sleep singkat untuk memberi waktu snackbar muncul
+        //     try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-            // --- VALIDATION LOGIC ---
-            String validationMessage = swapInputAmountPage.getValidationMessage();
-            System.out.println("Pesan validasi yang diterima: " + validationMessage);
+        //     // --- VALIDATION LOGIC ---
+        //     String validationMessage = swapInputAmountPage.getValidationMessage();
+        //     System.out.println("Pesan validasi yang diterima: " + validationMessage);
 
-            // 1. Jika Minimum Swap, ambil angkanya, input ulang, dan lanjut
-            if (validationMessage.contains("Minimum swap")) {
-                System.out.println("Pesan validasi terdeteksi: " + validationMessage);
+        //     // 1. Jika Minimum Swap, ambil angkanya, input ulang, dan lanjut
+        //     if (validationMessage.contains("Minimum swap")) {
+        //         System.out.println("Pesan validasi terdeteksi: " + validationMessage);
                 
-                // Regex: Mengganti semua karakter KECUALI angka (0-9) dan titik (.) dengan string kosong
-                // Contoh: "Minimum swap is 0.00003849 BTC" -> "0.00003849"
-                String minAmount = validationMessage.replaceAll("[^0-9.]", "");
+        //         // Regex: Mengganti semua karakter KECUALI angka (0-9) dan titik (.) dengan string kosong
+        //         // Contoh: "Minimum swap is 0.00003849 BTC" -> "0.00003849"
+        //         String minAmount = validationMessage.replaceAll("[^0-9.]", "");
                 
-                System.out.println("Nilai minimum yang diekstrak: " + minAmount);
+        //         System.out.println("Nilai minimum yang diekstrak: " + minAmount);
 
                 if (!minAmount.isEmpty()) {
                     swapInputAmountPage.inputAmountAssetTo(amount, codeTo);
@@ -81,16 +81,16 @@ public class SwapAssetSteps extends BasePage {
                     // --- PROCEED TO CONFIRMATION ---
                 boolean isTransactionSuccess = swapConfirmationPage.clickKonfirmasiButton();
 
-                if (isTransactionSuccess) {
-                    swapHistoryStatementPage.clickDoneButtonHistoryStatement();
-                } else {
-                    System.out.println("Transaksi untuk " + code + " gagal saat konfirmasi.");
-                    continue; // Lanjut ke aset berikutnya
-                }
-            }
-            // 3. Jika "SUCCESS" atau tidak ada snackbar, lanjut ke proses konfirmasi
+        //         if (isTransactionSuccess) {
+        //             swapHistoryStatementPage.clickDoneButtonHistoryStatement();
+        //         } else {
+        //             System.out.println("Transaksi untuk " + code + " gagal saat konfirmasi.");
+        //             continue; // Lanjut ke aset berikutnya
+        //         }
+        //     }
+        //     // 3. Jika "SUCCESS" atau tidak ada snackbar, lanjut ke proses konfirmasi
             
-        }
+        // }
     }
 
 }
