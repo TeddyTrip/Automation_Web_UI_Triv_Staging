@@ -1,5 +1,8 @@
 package pages.swap;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -7,7 +10,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import api.InstallCoinDetails;
 import api.InstallCoinLists;
+import formula.MinimalBuySellAssetSpotCalculation;
 
 import pages.BasePage;
 
@@ -17,6 +23,8 @@ public class SwapInputAmountPage extends BasePage {
     private WebDriverWait wait;
 
     InstallCoinLists installCoinLists = new InstallCoinLists();
+    InstallCoinDetails installCoinDetails = new InstallCoinDetails();
+    MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
 
     private By searchBoxListWallet = By.className("select2-search__field");
     private By amountAssetFromInputField = By.id("amount_2");
@@ -65,23 +73,52 @@ public class SwapInputAmountPage extends BasePage {
     }
 }
 
-    public void inputAmountAssetTo(String idrAmount, String codeTo) {
-        // // 1. Ambil harga dari API (Behind the scenes)
-        // double buyPrice = installCoinLists.getMinimalBuyPriceFromApi(codeTo);
+    public void inputAmountAssetTo(String codeTo) {
+        // 1. Ambil minimal asset dari API (Behind the scenes)
+        double minimalBuyAsset = installCoinDetails.getMinimalBuyFromApi(codeTo);
+
+        double priceBuy = installCoinLists.getBuyPriceFromApi(codeTo);
+
+        double calculateMinimalBuyAssetAnd1KRupiah = 1000 / priceBuy;
+        double finalCalculation = calculateMinimalBuyAssetAnd1KRupiah + minimalBuyAsset;
         
-        // // 2. Kalkulasi (Behind the scenes)
-        // double amountIdr = Double.parseDouble(idrAmount);
-        // double calculatedAsset = amountIdr / buyPrice;
+        // 3. Formatting (Misal 8 digit di belakang koma)
+        String finalAmountAsset = String.format("%.8f", finalCalculation);
         
-        // // 3. Formatting (Misal 8 digit di belakang koma)
-        // String finalAmount = String.format("%.8f", calculatedAsset);
+        // 4. Input ke UI
+        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
+        amountInput.clear();
+
+        StringSelection stringSelection = new StringSelection(finalAmountAsset);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+        amountInput.click();
+        amountInput.sendKeys(Keys.chord(Keys.CONTROL, "v"));
         
-        // // 4. Input ke UI
-        // var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
-        // amountInput.clear();
-        // amountInput.sendKeys(finalAmount);
+        System.out.println("Minimal Asset for " + codeTo + " is " + finalAmountAsset);
+    }
+
+    public void inputAmountAssetFrom(String codeTo) {
+        // 1. Ambil minimal asset dari API (Behind the scenes)
+        double minimalSellAsset = installCoinDetails.getMinimalSellFromApi(codeTo);
+
+        double priceSell = installCoinLists.getSellPriceFromApi(codeTo);
+
+        double calculateMinimalBuyAssetAnd1KRupiah = 1000 / priceSell;
+        double finalCalculation = calculateMinimalBuyAssetAnd1KRupiah + minimalSellAsset;
         
-        // System.out.println("Auto-calculated " + idrAmount + " IDR to " + finalAmount + " " + codeTo);
+        // 3. Formatting (Misal 8 digit di belakang koma)
+        String finalAmountAsset = String.format("%.8f", finalCalculation);
+        
+        // 4. Input ke UI
+        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountAssetToInputField));
+        amountInput.clear();
+
+        StringSelection stringSelection = new StringSelection(finalAmountAsset);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+        amountInput.click();
+        amountInput.sendKeys(Keys.chord(Keys.CONTROL, "v"));
+        
+        System.out.println("Minimal Asset for " + codeTo + " is " + finalAmountAsset);
     }
 
     

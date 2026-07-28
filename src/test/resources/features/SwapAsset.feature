@@ -6,13 +6,14 @@ Feature: Swap Asset
     And Menekan tombol Masuk
     And Menyelesaikan proses TwoFA jika diminta
 
-    @BuyFlowLengkap
+    #mvn test "-Dcucumber.options=--tags @SwapFlowCustom"
+    @SwapFlowCustom
     Scenario: Swap Beberapa Asset Custom
     And Swap aset secara custom
       | Code From | Code To | Category From | Category To | Amount |
       | BTC       | USDT    | crypto        | usd         | 50000  |
-      | USDT      | PAX     | usd           | gold        | 50000  |
+      | USDT      | PAXG    | usd           | gold        | 50000  |
       | XAUT      | XLM     | gold          | crypto      | 50000  |
       | EURS      | RYAAY   | euro          | stocks      | 50000  |
-      | TSLA      | YB      | stocks        | euro        | 50000  |
+      | TSLA      | YB      | stocks        | crypto      | 50000  |
     Then Masuk di Dashboard Triv Staging
