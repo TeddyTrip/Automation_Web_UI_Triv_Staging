@@ -41,8 +41,16 @@ public class BuyDashboardPage {
         return By.xpath(String.format(assetXpath, code));
     }
 
-    public void selectCategory(String category) {
-        wait.until(ExpectedConditions.elementToBeClickable(getCategoryLocator(category))).click();
+    public void selectCategory(String code) {
+        // Dapatkan nama category asset dari API berdasarkan code
+        String categoryName = installCoinLists.getCategoryFromApi(code);
+        
+        if (categoryName == null || categoryName.trim().isEmpty()) {
+            throw new RuntimeException("Category untuk asset dengan code '" + code + "' tidak ditemukan dari API!");
+        }
+
+        // Panggil getCategoryLocator untuk mendapatkan element-nya, lalu klik
+        wait.until(ExpectedConditions.elementToBeClickable(getCategoryLocator(categoryName))).click();
     }
 
     public void selectAssetByCode(String code) {

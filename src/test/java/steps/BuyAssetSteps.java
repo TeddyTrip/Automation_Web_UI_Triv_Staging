@@ -40,7 +40,7 @@ public class BuyAssetSteps {
             String category = row.get("Category");
 
             // Sekarang kita panggil method-nya dengan data tersebut
-            buyDashboardPage.selectCategory(category);
+            buyDashboardPage.selectCategory(code);
             buyDashboardPage.selectAssetByCode(code);
             buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
 
@@ -87,12 +87,12 @@ public class BuyAssetSteps {
             // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
             String code = row.get("Code");
             String market_service = row.get("Market_Service");
-            String category = row.get("Category");
+            // String category = row.get("Category");
 
-            System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
             
             // Sekarang kita panggil method-nya dengan data tersebut
-            buyDashboardPage.selectCategory(category);
+            buyDashboardPage.selectCategory(code);
             buyDashboardPage.selectAssetByCode(code);
             buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
 

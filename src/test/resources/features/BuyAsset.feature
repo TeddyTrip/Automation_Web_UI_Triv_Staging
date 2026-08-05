@@ -11,12 +11,12 @@ Feature: Pembelian Asset Custom
     @BuyFlowLengkap
     Scenario: Beli Beberapa Asset Custom
       And Membeli aset secara custom
-        | Code | Category |
-        | BTC  | crypto |
-        | ETH  | crypto |
-        | PAXG  | gold |
-        | USDT | usd |
-        | EURS  | euro |
+        | Code | 
+        | BTC |
+        | ETH |
+        | PAXG |
+        | USDT |
+        | EURS |
     Then Masuk di Dashboard Triv Staging
 
     #mvn test "-Dcucumber.options=--tags @BuyFlowCSV"
