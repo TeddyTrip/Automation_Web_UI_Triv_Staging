@@ -110,7 +110,7 @@ public class SellAssetSteps {
     }
 
     @And("Menjual aset secara custom menggunakan data CSV")
-    public void membeli_aset_dari_csv() {
+    public void menjual_aset_dari_csv() {
         // Ambil data dari context dan cast kembali ke bentuk List Map
         List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
         

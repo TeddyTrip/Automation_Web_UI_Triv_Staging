@@ -11,7 +11,7 @@ public class DashboardPage extends BasePage {
     private WebDriverWait wait;
 
     private By iconBuySell = By.cssSelector("a[href='/dashboard/buy-sell']");
-    private By iconSwap = By.cssSelector("a[href='/dashboard/swap']");
+    private By iconSwap = By.cssSelector("a[href='/dashboard/coin/swap']");
 
     public DashboardPage(WebDriver driver) {
         super();
