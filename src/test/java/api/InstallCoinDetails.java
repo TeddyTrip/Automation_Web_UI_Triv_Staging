@@ -46,7 +46,7 @@ public class InstallCoinDetails {
             JsonNode root = mapper.readTree(new URL("https://cihuy.triv.id/api/v1/install/coin/details?coin_id=" + assetID));
             
             // Karena response berupa JSON Object tunggal, 
-            // langsung cek dan ambil field "min_buy" tanpa looping 'for'.
+            // langsung cek dan ambil field "min_sell" tanpa looping 'for'.
             if (root != null && root.has("min_buy")) {
                 return root.get("min_buy").asDouble();
             }
