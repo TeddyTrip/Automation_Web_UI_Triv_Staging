@@ -43,9 +43,9 @@ public class SellAssetSteps {
             String amount = row.get("Amount");
 
             // Sekarang kita panggil method-nya dengan data tersebut
-            sellDashboardPage.selectCategory(category);
+            sellDashboardPage.selectCategory(code);
             sellDashboardPage.selectAssetByCode(code);
-            sellInputAmountPage.inputAmountInIDRUsingMinimumSellTransaction(amount); // Tambahkan ini jika ada input untuk IDR
+            sellInputAmountPage.inputAmountInIDRUsingMinimumSellTransaction(code); // Tambahkan ini jika ada input untuk IDR
 
             sellInputAmountPage.clickLanjutButton();
 
@@ -123,10 +123,10 @@ public class SellAssetSteps {
             String market_service = row.get("Market_Service");
             String category = row.get("Category");
 
-            System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
             
             // Sekarang kita panggil method-nya dengan data tersebut
-            sellDashboardPage.selectCategory(category);
+            sellDashboardPage.selectCategory(code);
             sellDashboardPage.selectAssetByCode(code);
             sellInputAmountPage.inputAmountInIDRUsingMinimumSellTransaction(code);
 
@@ -151,7 +151,24 @@ public class SellAssetSteps {
 
                 if (!minAmount.isEmpty()) {
                     sellInputAmountPage.inputAssetAmount(minAmount);
-                    sellInputAmountPage.clickLanjutButton();
+
+                    if (validationMessage.contains("Can't process") || validationMessage.toLowerCase().contains("balance")) {
+                        System.out.println("Saldo tidak cukup untuk " + code + ". Melanjutkan ke aset berikutnya.");
+                        continue;
+                    }
+                    else{
+                        sellInputAmountPage.clickLanjutButton();
+
+                        boolean isTransactionSuccess = sellConfirmationPage.clickKonfirmasiButton();
+
+                        if (isTransactionSuccess) {
+                            sellHistoryStatement.clickDoneButtonHistoryStatement();
+                        } else {
+                            System.out.println("Transaksi untuk " + code + " gagal saat konfirmasi.");
+                            continue; // Lanjut ke aset berikutnya
+                        }
+                    }
+                    
                 } else {
                     System.out.println("Gagal mengekstrak nilai minimum dari pesan. Skip aset.");
                     continue; // Melewati aset ini jika ekstraksi gagal

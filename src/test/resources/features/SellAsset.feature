@@ -11,11 +11,11 @@ Feature: Penjualan Asset Custom
   @SellFlowLengkap
   Scenario: Jual Beberapa Asset Custom
     And Menjual aset secara custom
-      | Code | Category | Amount |
-      | BTC  | crypto   | 5000  |
-      | XAUT  | gold     | 60000 |
-      | USO  | oil      | 7500000  |
-      | USDT  | usd      | 7500000  |
+      | Code | 
+      | BTC  |
+      | XAUT  |
+      | USO  |
+      | USDT  |
     Then Masuk di Dashboard Triv Staging
 
   #mvn test "-Dcucumber.options=--tags @SellFlowCSV"
