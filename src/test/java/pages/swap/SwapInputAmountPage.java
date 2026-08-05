@@ -2,6 +2,7 @@ package pages.swap;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -10,7 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.junit.*;
 import api.InstallCoinDetails;
 import api.InstallCoinLists;
 import formula.MinimalBuySellAssetSpotCalculation;
@@ -48,9 +49,74 @@ public class SwapInputAmountPage extends BasePage {
     }
 
     public void getSearchboxComboboxListWallet(String code) {
+        // 1. Dapatkan expected v_money dari API
+        String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
+        Assert.assertNotNull("Gagal mendapatkan v_money dari API untuk code: " + code, expectedVMoney);
+        System.out.println("Expected v_money dari API: " + expectedVMoney);
+        
+        // 2. Bentuk format teks target: "Dompet YieldBasis Triv"
+        String targetWalletText = "Dompet " + expectedVMoney + " Triv";
+        System.out.println("Expected Wallet text: " + targetWalletText);
+
+        // 3. Input v_money ke search box combobox
         WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
         fillSearchBoxComboboxListWallet.clear();
-        fillSearchBoxComboboxListWallet.sendKeys(code, Keys.ENTER);
+        fillSearchBoxComboboxListWallet.sendKeys(expectedVMoney);
+        
+        // Beri jeda agar Select2 selesai merender hasil filter
+        try { 
+            Thread.sleep(1000); 
+        } catch (InterruptedException e) { 
+            e.printStackTrace(); 
+        }
+        
+        // 4. Definisikan locator XPath untuk opsi wallet
+        String xpath = String.format("//ul[contains(@class, 'select2-results__options')]//li[contains(., '%s')]", targetWalletText);
+        By targetOptionLocator = By.xpath(xpath);
+        
+        // 5. Tangani Stale Element dengan Loop Retry (Maksimal 3 kali percobaan)
+        WebElement targetOption = null;
+        int attempts = 0;
+        while (attempts < 3) {
+            try {
+                targetOption = wait.until(ExpectedConditions.elementToBeClickable(targetOptionLocator));
+                break; 
+            } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                attempts++;
+                System.out.println("Stale element terdeteksi, mencoba mengambil ulang elemen... (Percobaan ke-" + attempts + ")");
+                try { Thread.sleep(500); } catch (InterruptedException ie) { ie.printStackTrace(); }
+            }
+        }
+        
+        Assert.assertNotNull("Wallet dengan target text '" + targetWalletText + "' tidak ditemukan!", targetOption);
+
+        // 6. Scroll dan klik elemen
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", targetOption);
+        
+        try { 
+            Thread.sleep(300); 
+        } catch (InterruptedException e) { 
+            e.printStackTrace(); 
+        }
+        
+        try {
+            targetOption.click();
+        } catch (Exception e) {
+            js.executeScript("arguments[0].click();", targetOption);
+        }
+        
+        // 7. Tunggu hingga dropdown Select2 benar-benar tertutup agar tidak memblokir elemen berikutnya
+        try {
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("select2-dropdown")));
+        } catch (Exception e) {
+            try {
+                fillSearchBoxComboboxListWallet.sendKeys(Keys.ESCAPE);
+            } catch (Exception ignored) {}
+        }
+        
+        // DIPERBAIKI DI SINI (Menggunakan System.out, bukan System.strOut)
+        System.out.println("Berhasil memilih wallet: " + targetWalletText);
     }
 
     public String getValidationMessage() {
