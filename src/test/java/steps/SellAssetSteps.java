@@ -193,4 +193,104 @@ public class SellAssetSteps {
             // 3. Jika "SUCCESS" atau tidak ada snackbar, lanjut ke proses konfirmasi
         }
     }
+
+
+
+    @Given("Menjalankan flow {string} dengan data {string} untuk sell dengan amount dalam IDR")
+    public void load_data_dinamis_buy_dengan_amount(String flow, String file) throws Exception {
+        // 1. Dapatkan path lengkap (contoh: src/test/resources/data/buy/buy-assets-with-certain-amount.csv)
+        String path = CsvDataManager.getPath(flow, file);
+        
+        // 2. Baca file CSV dan simpan ke dalam context
+        List<Map<String, String>> data = CsvUtils.readData(path);
+        context.setContext("csvData", data);
+        
+        System.out.println("Data berhasil dimuat dari: " + path);
+    }
+
+
+    @And("Menjual aset secara custom menggunakan data CSV buy dengan amount dalam IDR")
+    public void membeli_aset_dari_csv_dengan_amount() {
+        // Ambil data dari context dan cast kembali ke bentuk List Map
+        List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
+        
+        for (Map<String, String> row : data) {
+            dashboardPage.clickBuySellIconOnDashboard();
+            sellDashboardPage.clickSellIconOnDashboard();
+            
+            // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
+            String code = row.get("Code");
+            String amount = row.get("Amount");
+            // String category = row.get("Category");
+
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            
+            // Sekarang kita panggil method-nya dengan data tersebut
+            sellDashboardPage.selectCategory(code);
+            sellDashboardPage.selectAssetByCode(code);
+            sellInputAmountPage.inputCustomAmountInIDR(amount);
+
+            sellInputAmountPage.clickLanjutButton();
+
+            // Tambahkan sleep singkat untuk memberi waktu snackbar muncul
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            // --- VALIDATION LOGIC ---
+            String validationMessage = sellInputAmountPage.getValidationMessage();
+            System.out.println("Pesan validasi yang diterima: " + validationMessage);
+
+            // 1. Jika Minimum Sell, ambil angkanya, input ulang, dan lanjut
+            if (validationMessage.contains("Minimum sell")) {
+                System.out.println("Pesan validasi terdeteksi: " + validationMessage);
+                
+                // Regex: Mengganti semua karakter KECUALI angka (0-9) dan titik (.) dengan string kosong
+                // Contoh: "Minimum sell is 0.00003849 BTC" -> "0.00003849"
+                String minAmount = validationMessage.replaceAll("[^0-9.]", "");
+                
+                System.out.println("Nilai minimum yang diekstrak: " + minAmount);
+
+                if (!minAmount.isEmpty()) {
+                    sellInputAmountPage.inputAssetAmount(minAmount);
+
+                    if (validationMessage.contains("Can't process") || validationMessage.toLowerCase().contains("balance")) {
+                        System.out.println("Saldo tidak cukup untuk " + code + ". Melanjutkan ke aset berikutnya.");
+                        continue;
+                    }
+                    else{
+                        sellInputAmountPage.clickLanjutButton();
+
+                        boolean isTransactionSuccess = sellConfirmationPage.clickKonfirmasiButton();
+
+                        if (isTransactionSuccess) {
+                            sellHistoryStatement.clickDoneButtonHistoryStatement();
+                        } else {
+                            System.out.println("Transaksi untuk " + code + " gagal saat konfirmasi.");
+                            continue; // Lanjut ke aset berikutnya
+                        }
+                    }
+                    
+                } else {
+                    System.out.println("Gagal mengekstrak nilai minimum dari pesan. Skip aset.");
+                    continue; // Melewati aset ini jika ekstraksi gagal
+                }
+            } 
+            // 2. Jika saldo tidak cukup, log error dan skip ke aset berikutnya
+            else if (validationMessage.contains("Can't process") || validationMessage.toLowerCase().contains("balance")) {
+                System.out.println("Saldo tidak cukup untuk " + code + ". Melanjutkan ke aset berikutnya.");
+                continue; 
+            }
+            else {
+                // --- PROCEED TO CONFIRMATION ---
+                boolean isTransactionSuccess = sellConfirmationPage.clickKonfirmasiButton();
+
+                if (isTransactionSuccess) {
+                    sellHistoryStatement.clickDoneButtonHistoryStatement();
+                } else {
+                    System.out.println("Transaksi untuk " + code + " gagal saat konfirmasi.");
+                    continue; // Lanjut ke aset berikutnya
+                }
+            }
+            // 3. Jika "SUCCESS" atau tidak ada snackbar, lanjut ke proses konfirmasi
+        }
+    }
 }
