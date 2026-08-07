@@ -2,18 +2,24 @@ package steps;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import pages.dashboard.DashboardPage;
 import pages.buy.BuyDashboardPage;
 import pages.buy.BuyConfirmationPage;
 import pages.buy.BuyHistoryStatement;
 import pages.buy.BuyInputAmountPage;
 import src.test.java.driver.DriverManager;
+import utils.CategoryAssetRandomizer;
+import utils.ConfigReader;
 import utils.CsvDataManager;
 import utils.CsvUtils;
 import context.ScenarioContext;
 import formula.MinimalBuyAssetSpotCalculation;
 
 import java.util.*;
+
+import org.junit.Assert;
 
 public class BuyAssetSteps {
 
@@ -26,6 +32,8 @@ public class BuyAssetSteps {
     
     ScenarioContext context = new ScenarioContext();
     CsvUtils csvUtils = new CsvUtils();
+
+    private Map<String, List<Map<String, Object>>> randomAssetsPerCategory;
 
     @And("Membeli aset secara custom")
     public void membeli_asset_custom(DataTable dataTable) {
@@ -108,6 +116,57 @@ public class BuyAssetSteps {
                 // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
                 // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
                 System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+            }
+        }
+    }
+
+    @Given("Mengambil aset secara acak per kategori berdasarkan API install coin lists")
+    public void mengambilAsetSecaraAcakPerKategoriBerdasarkanApiInstallCoinLists() {
+        String nStr = ConfigReader.getProperty("jumlah_random_per_kategori");
+        int n = Integer.parseInt(nStr != null ? nStr : "1");
+
+        List<Map<String, Object>> allCoins = RestAssured
+                .given()
+                .when()
+                .get("https://cihuy.triv.id/api/v1/install/coin/lists")
+                .as(new TypeRef<List<Map<String, Object>>>() {});
+
+        randomAssetsPerCategory = CategoryAssetRandomizer.getRandomPerCategory(allCoins, n, "category");
+        CategoryAssetRandomizer.printSummaryReport(randomAssetsPerCategory);
+    }
+
+    @When("Membeli aset secara acak per kategori berdasarkan API install coin lists")
+    public void membeliAsetSecaraAcakPerKategoriBerdasarkanApiInstallCoinLists() {
+        Assert.assertNotNull("Random assets belum diinisialisasi!", randomAssetsPerCategory);
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : randomAssetsPerCategory.entrySet()) {
+            String category = entry.getKey();
+            List<Map<String, Object>> coins = entry.getValue();
+
+            for (Map<String, Object> coin : coins) {
+                dashboardPage.clickBuySellIconOnDashboard();
+
+                String vMoney = String.valueOf(coin.get("v_money"));
+                String code = String.valueOf(coin.get("code"));
+
+                System.out.println("Memproses pembelian: " + code + " (" + vMoney + ")");
+                
+                buyDashboardPage.selectCategory(category);
+                buyDashboardPage.selectAssetByCode(code);
+                buyInputAmountPage.inputAmountInIDR(code);
+                buyInputAmountPage.clickLanjutButton();
+
+                boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();
+
+                if (isTransactionSuccess) {
+                    buyHistoryStatement.clickDoneButtonHistoryStatement();
+                } else {
+                    // Jika isSuccess = false, kita tidak klik 'Done'. 
+                    // Loop akan lanjut ke item berikutnya. 
+                    // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                    // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                    System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+                }
             }
         }
     }
