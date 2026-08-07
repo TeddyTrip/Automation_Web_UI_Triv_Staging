@@ -47,27 +47,6 @@ public class SwapDashboardPage extends BasePage {
 
     public void selectAssetByCode(String code) {
     
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         // 1. Dapatkan expected v_money dari API, lalu ubah ke huruf kecil (lowercase)
         String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
         
@@ -82,7 +61,7 @@ public class SwapDashboardPage extends BasePage {
         // 3. Input code ke search box
         WebElement search = wait.until(ExpectedConditions.elementToBeClickable(searchBox));
         search.clear();
-        search.sendKeys(code, Keys.ENTER);
+        search.sendKeys(expectedVMoney, Keys.ENTER);
         
         
         // 4. BUAT XPATH BERDASARKAN DATA-V-MONEY (HURUF KECIL)

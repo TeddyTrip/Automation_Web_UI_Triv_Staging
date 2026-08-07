@@ -151,9 +151,9 @@ public class BuyAssetSteps {
 
                 System.out.println("Memproses pembelian: " + code + " (" + vMoney + ")");
                 
-                buyDashboardPage.selectCategory(category);
+                buyDashboardPage.selectCategory(code);
                 buyDashboardPage.selectAssetByCode(code);
-                buyInputAmountPage.inputAmountInIDR(code);
+                buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
                 buyInputAmountPage.clickLanjutButton();
 
                 boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();

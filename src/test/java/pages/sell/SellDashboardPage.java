@@ -63,13 +63,15 @@ public class SellDashboardPage extends BasePage {
     }
 
     public void selectAssetByCode(String code) {
+        String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
+        
         // 1. Klik icon pencarian
         wait.until(ExpectedConditions.elementToBeClickable(searchRectangleIcon)).click();
         
         // 2. Input code ke search box
         var search = wait.until(ExpectedConditions.elementToBeClickable(searchBox));
         search.clear();
-        search.sendKeys(code, Keys.ENTER);
+        search.sendKeys(expectedVMoney, Keys.ENTER);
         
         // 3. DETEKSI ASET BERDASARKAN DATA-CURRENCY
         // Kita menggunakan .toLowerCase() karena data-currency biasanya selalu huruf kecil

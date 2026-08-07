@@ -68,7 +68,7 @@ public class BuyDashboardPage {
         // 3. Input code ke search box
         WebElement search = wait.until(ExpectedConditions.elementToBeClickable(searchBox));
         search.clear();
-        search.sendKeys(code, Keys.ENTER);
+        search.sendKeys(expectedVMoney, Keys.ENTER);
         
         
         // 4. BUAT XPATH BERDASARKAN DATA-V-MONEY (HURUF KECIL)
