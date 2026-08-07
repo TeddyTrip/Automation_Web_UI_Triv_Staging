@@ -13,7 +13,7 @@ public class SwapConfirmationPage extends BasePage {
     private WebDriver driver;
     private WebDriverWait wait;
     
-    private By btnKonfirmasi = By.cssSelector("a.link_to_sell_4");
+    private By btnKonfirmasi = By.cssSelector("a.link_to_buy_4");
 
     public SwapConfirmationPage(WebDriver driver) {
         super();

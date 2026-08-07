@@ -7,13 +7,20 @@ Feature: Penjualan Asset Custom
     And Menekan tombol Masuk
     And Menyelesaikan proses TwoFA jika diminta
 
-#mvn test "-Dcucumber.options=--tags @SellFlowLengkap"
+  #mvn test "-Dcucumber.options=--tags @SellFlowLengkap"
   @SellFlowLengkap
   Scenario: Jual Beberapa Asset Custom
     And Menjual aset secara custom
-      | Code | Category | Amount |
-      | BTC  | crypto   | 5000  |
-      | XAUT  | gold     | 60000 |
-      | USO  | oil      | 7500000  |
-      | USDT  | usd      | 7500000  |
+      | Code | 
+      | BTC  |
+      | XAUT  |
+      | USO  |
+      | USDT  |
+    Then Masuk di Dashboard Triv Staging
+
+  #mvn test "-Dcucumber.options=--tags @SellFlowCSV"
+  @SellFlowCSV
+    Scenario: Jual Beberapa Asset Custom via CSV
+    Given Menjalankan flow "sell" dengan data "sell-assets" untuk sell
+    And Menjual aset secara custom menggunakan data CSV
     Then Masuk di Dashboard Triv Staging
