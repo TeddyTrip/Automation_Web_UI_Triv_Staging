@@ -64,17 +64,13 @@ public class BuyInputAmountPage extends BasePage {
     
         String finalAmount = String.format("%.0f", Double.parseDouble(amountInIDR));
         
-       
         var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountIdrBuyInputField));
         amountInput.clear();
-        
         
         StringSelection stringSelection = new StringSelection(finalAmount);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
         
-        
         amountInput.click();
-        
         
         amountInput.sendKeys(Keys.chord(Keys.CONTROL, "v"));
     }
