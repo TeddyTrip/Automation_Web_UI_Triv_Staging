@@ -170,5 +170,55 @@ public class BuyAssetSteps {
             }
         }
     }
+
+
+    @Given("Menjalankan flow {string} dengan data {string} untuk buy dengan amount dalam IDR")
+    public void load_data_dinamis_buy_dengan_amount(String flow, String file) throws Exception {
+        // 1. Dapatkan path lengkap (contoh: src/test/resources/data/buy/buy-assets-with-certain-amount.csv)
+        String path = CsvDataManager.getPath(flow, file);
+        
+        // 2. Baca file CSV dan simpan ke dalam context
+        List<Map<String, String>> data = CsvUtils.readData(path);
+        context.setContext("csvData", data);
+        
+        System.out.println("Data berhasil dimuat dari: " + path);
+    }
+
+
+    @And("Membeli aset secara custom menggunakan data CSV buy dengan amount dalam IDR")
+    public void membeli_aset_dari_csv_dengan_amount() {
+        // Ambil data dari context dan cast kembali ke bentuk List Map
+        List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
+        
+        for (Map<String, String> row : data) {
+            dashboardPage.clickBuySellIconOnDashboard();
+            
+            // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
+            String code = row.get("Code");
+            String amount = row.get("Amount");
+            // String category = row.get("Category");
+
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            
+            // Sekarang kita panggil method-nya dengan data tersebut
+            buyDashboardPage.selectCategory(code);
+            buyDashboardPage.selectAssetByCode(code);
+            buyInputAmountPage.inputCustomAmountInIDR(amount);
+
+            buyInputAmountPage.clickLanjutButton();
+
+            boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();
+
+            if (isTransactionSuccess) {
+                buyHistoryStatement.clickDoneButtonHistoryStatement();
+            } else {
+                // Jika isSuccess = false, kita tidak klik 'Done'. 
+                // Loop akan lanjut ke item berikutnya. 
+                // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+            }
+        }
+    }
 }
 
