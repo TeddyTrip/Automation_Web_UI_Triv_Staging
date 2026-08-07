@@ -60,6 +60,25 @@ public class BuyInputAmountPage extends BasePage {
         System.out.println("Berhasil paste nilai " + finalAmount + " untuk aset: " + code);
     }
 
+    public void inputCustomAmountInIDR(String amountInIDR) {
+    
+        String finalAmount = String.format("%.0f", Double.parseDouble(amountInIDR));
+        
+       
+        var amountInput = wait.until(ExpectedConditions.elementToBeClickable(amountIdrBuyInputField));
+        amountInput.clear();
+        
+        
+        StringSelection stringSelection = new StringSelection(finalAmount);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+        
+        
+        amountInput.click();
+        
+        
+        amountInput.sendKeys(Keys.chord(Keys.CONTROL, "v"));
+    }
+
     public void clickLanjutButton() {
         wait.until(ExpectedConditions.elementToBeClickable(btnLanjut)).click();
     }

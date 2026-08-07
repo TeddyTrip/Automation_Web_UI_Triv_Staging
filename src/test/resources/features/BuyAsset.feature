@@ -32,4 +32,12 @@ Feature: Pembelian Asset Custom
     Given Mengambil aset secara acak per kategori berdasarkan API install coin lists
     When Membeli aset secara acak per kategori berdasarkan API install coin lists
     Then Masuk di Dashboard Triv Staging
+
+    #mvn clean test "-Dcucumber.options=--tags @BuyFlowCSVWithCertainAmount"
+    @BuyFlowCSVWithCertainAmount
+    Scenario: Beli Beberapa Asset Custom via CSV
+    Given Menjalankan flow "buy" dengan data "buy-assets-with-certain-amount" untuk buy dengan amount dalam IDR
+    And Membeli aset secara custom menggunakan data CSV buy dengan amount dalam IDR
+    Then Masuk di Dashboard Triv Staging
     
+
