@@ -18,7 +18,7 @@ Feature: Penjualan Asset Custom
       | USDT  |
     Then Masuk di Dashboard Triv Staging
 
-    #mvn test "-Dcucumber.options=--tags @SellFlowCSV"
+    #mvn clean test "-Dcucumber.options=--tags @SellFlowCSV"
     @SellFlowCSV
     Scenario: Jual Beberapa Asset Custom via CSV
     Given Menjalankan flow "sell" dengan data "sell-assets" untuk sell
