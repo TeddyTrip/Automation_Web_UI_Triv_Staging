@@ -6,5 +6,5 @@ import java.time.Duration;
 
 public class BasePage {
     // Semua class Page akan mewarisi ini, jadi tidak perlu deklarasi ulang
-    protected WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(10));
+    protected WebDriverWait wait = new WebDriverWait(DriverManager.getDriver(), Duration.ofSeconds(30));
 }

@@ -12,6 +12,7 @@ public class DashboardPage extends BasePage {
 
     private By iconBuySell = By.cssSelector("a[href='/dashboard/buy-sell']");
     private By iconSwap = By.cssSelector("a[href='/dashboard/coin/swap']");
+    private By iconAutoInvest = By.cssSelector("a[href='/dashboard/auto-invest']");
 
     public DashboardPage(WebDriver driver) {
         super();
@@ -24,5 +25,9 @@ public class DashboardPage extends BasePage {
 
     public void clickSwapIconOnDashboard() {
         wait.until(ExpectedConditions.elementToBeClickable(iconSwap)).click();
+    }
+
+    public void clickAutoInvestIconOnDashboard() {
+        wait.until(ExpectedConditions.elementToBeClickable(iconAutoInvest)).click();
     }
 }
