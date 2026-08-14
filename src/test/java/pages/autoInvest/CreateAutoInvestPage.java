@@ -23,6 +23,7 @@ public class CreateAutoInvestPage extends BasePage{
     private By weeklyScheduleDropdown = By.id("weeklySchedule");
     private By monthlyScheduleDropdown = By.id("monthlySchedule");
     private By dropdownAssetButton = By.cssSelector("button.select-option-buy");
+    private By inputNominalField = By.id("inputAmount");
 
     public CreateAutoInvestPage(WebDriver driver) {
         super();
@@ -46,91 +47,91 @@ public class CreateAutoInvestPage extends BasePage{
     }
 
     public void searchAndSelectAsset(String code) {
-    String assetVMoneyName = installCoinLists.getV_MoneyFromApi(code);
-    String assetLabel = installCoinLists.getLabelFromApi(code);
-    
-    // 1. Temukan tombol dropdown dan scroll ke tengah
-    WebElement dropdownBtn = wait.until(ExpectedConditions.presenceOfElementLocated(dropdownAssetButton));
-    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", dropdownBtn);
+        String assetVMoneyName = installCoinLists.getV_MoneyFromApi(code);
+        String assetLabel = installCoinLists.getLabelFromApi(code);
+        
+        // 1. Temukan tombol dropdown dan scroll ke tengah
+        WebElement dropdownBtn = wait.until(ExpectedConditions.presenceOfElementLocated(dropdownAssetButton));
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", dropdownBtn);
 
-    System.out.println("🖱️ Membuka dropdown aset (menerapkan penanganan klik ganda)...");
+        System.out.println("🖱️ Membuka dropdown aset (menerapkan penanganan klik ganda)...");
 
-    // 2. KLIK PERTAMA (Untuk memberikan fokus / state awal)
-    js.executeScript("arguments[0].click();", dropdownBtn);
-
-    // 3. Cek apakah search bar langsung terbuka
-    try {
-        WebDriverWait shortWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(1));
-        shortWait.until(ExpectedConditions.visibilityOfElementLocated(searchBarAutoInvest));
-    } catch (Exception e) {
-        // Jika klik pertama gagal membuka search bar, lakukan klik kedua
-        System.out.println("⚠️ Klik pertama tidak membuka dropdown, mengeksekusi klik kedua...");
+        // 2. KLIK PERTAMA (Untuk memberikan fokus / state awal)
         js.executeScript("arguments[0].click();", dropdownBtn);
-    }
 
-    // 4. Pastikan search bar visible dan masukkan nilai aset
-    WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(searchBarAutoInvest));
-    field.clear();
-    field.sendKeys(assetVMoneyName);
-
-    // 5. XPath opsi aset yang dicari
-    String xpathOption = "//div[contains(@class, 'dropdown-list-buy') and (" +
-                         "contains(@data-label, '" + assetLabel + "') or " +
-                         "@data-currency='" + code + "' or " +
-                         "contains(@data-icon, '" + assetVMoneyName.toLowerCase() + "') or " +
-                         "contains(., '" + assetVMoneyName + "'))]";
-
-    // 6. MEKANISME RETRY CERDAS (Menggantikan Thread.sleep kaku agar tahan banting terhadap lag server)
-    WebElement element = null;
-    int maxRetries = 30;
-
-    for (int attempt = 1; attempt <= maxRetries; attempt++) {
+        // 3. Cek apakah search bar langsung terbuka
         try {
-            WebDriverWait retryWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(3));
-            element = retryWait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpathOption)));
-            if (element != null) {
-                break; // Berhasil ditemukan, keluar dari loop
-            }
+            WebDriverWait shortWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(1));
+            shortWait.until(ExpectedConditions.visibilityOfElementLocated(searchBarAutoInvest));
         } catch (Exception e) {
-            System.out.println("⏳ API Staging lambat, mencoba ulang mencari aset " + assetVMoneyName + " (Percobaan " + attempt + "/" + maxRetries + ")...");
+            // Jika klik pertama gagal membuka search bar, lakukan klik kedua
+            System.out.println("⚠️ Klik pertama tidak membuka dropdown, mengeksekusi klik kedua...");
+            js.executeScript("arguments[0].click();", dropdownBtn);
+        }
+
+        // 4. Pastikan search bar visible dan masukkan nilai aset
+        WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(searchBarAutoInvest));
+        field.clear();
+        field.sendKeys(assetVMoneyName);
+
+        // 5. XPath opsi aset yang dicari
+        String xpathOption = "//div[contains(@class, 'dropdown-list-buy') and (" +
+                            "contains(@data-label, '" + assetLabel + "') or " +
+                            "@data-currency='" + code + "' or " +
+                            "contains(@data-icon, '" + assetVMoneyName.toLowerCase() + "') or " +
+                            "contains(., '" + assetVMoneyName + "'))]";
+
+        // 6. MEKANISME RETRY CERDAS (Menggantikan Thread.sleep kaku agar tahan banting terhadap lag server)
+        WebElement element = null;
+        int maxRetries = 30;
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                field.clear();
-                field.sendKeys(assetVMoneyName); // Ketik ulang jika input sempat ter-reset
-                Thread.sleep(1000); // Jeda tunggu singkat untuk server merespon
-            } catch (InterruptedException ignored) {
-                Thread.currentThread().interrupt();
+                WebDriverWait retryWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(3));
+                element = retryWait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpathOption)));
+                if (element != null) {
+                    break; // Berhasil ditemukan, keluar dari loop
+                }
+            } catch (Exception e) {
+                System.out.println("⏳ API Staging lambat, mencoba ulang mencari aset " + assetVMoneyName + " (Percobaan " + attempt + "/" + maxRetries + ")...");
+                try {
+                    field.clear();
+                    field.sendKeys(assetVMoneyName); // Ketik ulang jika input sempat ter-reset
+                    Thread.sleep(1000); // Jeda tunggu singkat untuk server merespon
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
-    }
 
-    if (element == null) {
-        throw new RuntimeException("❌ Gagal menemukan aset " + assetVMoneyName + " (" + code + ") setelah " + maxRetries + " kali percobaan karena kendala server.");
-    }
+        if (element == null) {
+            throw new RuntimeException("❌ Gagal menemukan aset " + assetVMoneyName + " (" + code + ") setelah " + maxRetries + " kali percobaan karena kendala server.");
+        }
 
-    // 7. Klik elemen aset yang ditemukan
-    js.executeScript("arguments[0].click();", element);
-    System.out.println("✅ Berhasil memilih aset: " + assetVMoneyName);
-}
+        // 7. Klik elemen aset yang ditemukan
+        js.executeScript("arguments[0].click();", element);
+        System.out.println("✅ Berhasil memilih aset: " + assetVMoneyName);
+    }
 
     public void selectFrequency(String frequencyValue) {
         System.out.println("📌 [Native Select] Memilih frekuensi: " + frequencyValue);
-    
-    // 1. Tunggu elemen <select> muncul dan bisa dilihat
-    WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(dropDownFrequency));
-    
-    // 2. Scroll ke tengah layar agar posisi elemen stabil
-    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
-    try { Thread.sleep(300); } catch (InterruptedException e) {}
+        
+        // 1. Tunggu elemen <select> muncul dan bisa dilihat
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(dropDownFrequency));
+        
+        // 2. Scroll ke tengah layar agar posisi elemen stabil
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+        try { Thread.sleep(300); } catch (InterruptedException e) {}
 
-    // 3. Gunakan kelas Select resmi Selenium
-    org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(element);
-    
-    // 4. Pilih berdasarkan value (misal: "weekly" atau "monthly")
-    select.selectByValue(frequencyValue.toLowerCase());
-    
-    System.out.println("✅ Berhasil memilih frekuensi: " + frequencyValue);
+        // 3. Gunakan kelas Select resmi Selenium
+        org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(element);
+        
+        // 4. Pilih berdasarkan value (misal: "weekly" atau "monthly")
+        select.selectByValue(frequencyValue.toLowerCase());
+        
+        System.out.println("✅ Berhasil memilih frekuensi: " + frequencyValue);
     }
 
     public void selectNominalButton(String nominalValue) {
@@ -140,23 +141,23 @@ public class CreateAutoInvestPage extends BasePage{
     }
 
     public void selectWeeklyDay(String dayValue) {
-       System.out.println("📌 [Native Select] Memilih hari: " + dayValue);
-    
-    // 1. Tunggu elemen <select> weekly schedule muncul
-    WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(weeklyScheduleDropdown));
-    
-    // 2. Scroll ke tengah layar
-    org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
-    try { Thread.sleep(300); } catch (InterruptedException e) {}
+        System.out.println("📌 [Native Select] Memilih hari: " + dayValue);
+        
+        // 1. Tunggu elemen <select> weekly schedule muncul
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(weeklyScheduleDropdown));
+        
+        // 2. Scroll ke tengah layar
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+        try { Thread.sleep(300); } catch (InterruptedException e) {}
 
-    // 3. Gunakan kelas Select resmi Selenium
-    org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(element);
-    
-    // 4. Pilih berdasarkan value (misal: "monday", "wednesday", "friday", dll)
-    select.selectByValue(dayValue.toLowerCase());
-    
-    System.out.println("✅ Berhasil memilih hari: " + dayValue);
+        // 3. Gunakan kelas Select resmi Selenium
+        org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(element);
+        
+        // 4. Pilih berdasarkan value (misal: "monday", "wednesday", "friday", dll)
+        select.selectByValue(dayValue.toLowerCase());
+        
+        System.out.println("✅ Berhasil memilih hari: " + dayValue);
     }
 
     
@@ -188,6 +189,27 @@ public class CreateAutoInvestPage extends BasePage{
         System.out.println("Memilih Tanggal (Monthly): " + dateValue);
     }
 
+    public void inputAmountIDR(String amount){
+        System.out.println("⌨️ Memasukkan nominal investasi secara custom: " + amount);
+    
+        // 1. Tunggu hingga input field terlihat dan bisa diakses
+        WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(inputNominalField));
+        
+        // 2. Scroll ke tengah layar agar elemen berada di area pandang browser
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", field);
+        try { Thread.sleep(300); } catch (InterruptedException e) {}
+
+        // 3. Klik untuk memberi fokus, lalu bersihkan nilai yang ada di dalam input
+        field.click();
+        field.clear();
+        
+        // 4. Masukkan nilai kustom (misal: "1000000" atau variabel string lainnya)
+        field.sendKeys(amount);
+        
+        System.out.println("✅ Berhasil memasukkan nominal: " + amount);
+    }
+
     public void confirmAutoInvest() {
         wait.until(ExpectedConditions.elementToBeClickable(btnKonfirmasiAutoInvest)).click();
     }
@@ -197,14 +219,14 @@ public class CreateAutoInvestPage extends BasePage{
             // Gunakan timeout singkat 2 detik
             WebDriverWait shortWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(2));
             
-            // Cari alert danger yang di dalamnya mengandung teks "sabtu dan minggu"
+            // Perbaikan: Gunakan normalize-space(.) dan translate() agar case-insensitive & mencakup teks bersarang
             WebElement errorAlert = shortWait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//div[contains(@class, 'alert-danger') and contains(text(), 'sabtu dan minggu')]")
+                By.xpath("//div[contains(@class, 'alert-danger') and contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'sabtu dan minggu')]")
             ));
             
             return errorAlert.isDisplayed();
         } catch (Exception e) {
-            return false; // Jika error lain yang muncul (bukan soal sabtu/minggu), kembalikan false
+            return false; // Mengembalikan false jika alert error weekend tidak muncul
         }
     }
 
@@ -228,29 +250,5 @@ public class CreateAutoInvestPage extends BasePage{
         }
     }
 
-    // 1. Helper Frekuensi dengan Huruf Depan Kapital
-private String convertFrequencyToText(String value) {
-    if (value == null) return "";
-    switch (value.toLowerCase()) {
-        case "weekly": return "Mingguan";
-        case "monthly": return "Bulanan";
-        case "daily": return "Harian";
-        default: return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
-    }
-}
 
-// 2. Helper Hari dengan Huruf Depan Kapital
-private String convertValueToText(String value) {
-    if (value == null) return "";
-    switch (value.toLowerCase()) {
-        case "sunday": return "Minggu";
-        case "monday": return "Senin";
-        case "tuesday": return "Selasa";
-        case "wednesday": return "Rabu";
-        case "thursday": return "Kamis";
-        case "friday": return "Jumat";
-        case "saturday": return "Sabtu";
-        default: return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
-    }
-}
 }
