@@ -1,0 +1,5 @@
+$ErrorActionPreference = 'Stop'
+Write-Host '[1/2] Spot Market API Production vs Staging'
+mvn clean test '-Dtest=SpotMarketDualEnvironmentTestRunner'
+Write-Host '[2/2] Spot Market Web UI validation on Staging'
+mvn test '-Dtest=SpotMarketWebUiTestRunner' '-Denv=staging'

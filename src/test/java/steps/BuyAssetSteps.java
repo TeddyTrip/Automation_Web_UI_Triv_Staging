@@ -1,0 +1,224 @@
+package steps;
+
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.*;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import pages.dashboard.DashboardPage;
+import pages.buy.BuyDashboardPage;
+import pages.buy.BuyConfirmationPage;
+import pages.buy.BuyHistoryStatement;
+import pages.buy.BuyInputAmountPage;
+import src.test.java.driver.DriverManager;
+import utils.CategoryAssetRandomizer;
+import utils.ConfigReader;
+import utils.CsvDataManager;
+import utils.CsvUtils;
+import context.ScenarioContext;
+import formula.MinimalBuySellAssetSpotCalculation;
+
+import java.util.*;
+
+import org.junit.Assert;
+
+public class BuyAssetSteps {
+
+    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver());
+    BuyConfirmationPage buyConfirmationPage = new BuyConfirmationPage(DriverManager.getDriver());
+    BuyHistoryStatement buyHistoryStatement = new BuyHistoryStatement(DriverManager.getDriver());
+    BuyDashboardPage buyDashboardPage = new BuyDashboardPage(DriverManager.getDriver());
+    BuyInputAmountPage buyInputAmountPage = new BuyInputAmountPage(DriverManager.getDriver());
+    MinimalBuySellAssetSpotCalculation minimalBuyAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
+    
+    ScenarioContext context = new ScenarioContext();
+    CsvUtils csvUtils = new CsvUtils();
+
+    private Map<String, List<Map<String, Object>>> randomAssetsPerCategory;
+
+    @And("Membeli aset secara custom")
+    public void membeli_asset_custom(DataTable dataTable) {
+        List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
+        
+
+        for (Map<String, String> row : data) {
+            dashboardPage.clickBuySellIconOnDashboard();
+            
+            // row.get("Code") akan mengambil nilai dari kolom "Code" di tabel feature
+            String code = row.get("Code");
+            String category = row.get("Category");
+
+            // Sekarang kita panggil method-nya dengan data tersebut
+            buyDashboardPage.selectCategory(code);
+            buyDashboardPage.selectAssetByCode(code);
+            buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
+
+            buyInputAmountPage.clickLanjutButton();
+
+            boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();
+
+            if (isTransactionSuccess) {
+                buyHistoryStatement.clickDoneButtonHistoryStatement();
+            } else {
+                // Jika isSuccess = false, kita tidak klik 'Done'. 
+                // Loop akan lanjut ke item berikutnya. 
+                // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+            }
+
+        
+        }
+    }
+
+    
+    @Given("Menjalankan flow {string} dengan data {string} untuk buy")
+    public void load_data_dinamis_buy(String flow, String file) throws Exception {
+        // 1. Dapatkan path lengkap (contoh: src/test/resources/data/buy/buy-assets.csv)
+        String path = CsvDataManager.getPath(flow, file);
+        
+        // 2. Baca file CSV dan simpan ke dalam context
+        List<Map<String, String>> data = CsvUtils.readData(path);
+        context.setContext("csvData", data);
+        
+        System.out.println("Data berhasil dimuat dari: " + path);
+    }
+
+
+    @And("Membeli aset secara custom menggunakan data CSV")
+    public void membeli_aset_dari_csv() {
+        // Ambil data dari context dan cast kembali ke bentuk List Map
+        List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
+        
+        for (Map<String, String> row : data) {
+            dashboardPage.clickBuySellIconOnDashboard();
+            
+            // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
+            String code = row.get("Code");
+            String market_service = row.get("Market_Service");
+            // String category = row.get("Category");
+
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            
+            // Sekarang kita panggil method-nya dengan data tersebut
+            buyDashboardPage.selectCategory(code);
+            buyDashboardPage.selectAssetByCode(code);
+            buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
+
+            buyInputAmountPage.clickLanjutButton();
+
+            boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();
+
+            if (isTransactionSuccess) {
+                buyHistoryStatement.clickDoneButtonHistoryStatement();
+            } else {
+                // Jika isSuccess = false, kita tidak klik 'Done'. 
+                // Loop akan lanjut ke item berikutnya. 
+                // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+            }
+        }
+    }
+
+    @Given("Mengambil aset secara acak per kategori berdasarkan API install coin lists")
+    public void mengambilAsetSecaraAcakPerKategoriBerdasarkanApiInstallCoinLists() {
+        String nStr = ConfigReader.getProperty("jumlah_random_per_kategori");
+        int n = Integer.parseInt(nStr != null ? nStr : "1");
+
+        List<Map<String, Object>> allCoins = RestAssured
+                .given()
+                .when()
+                .get(ConfigReader.apiUrl("/install/coin/lists"))
+                .as(new TypeRef<List<Map<String, Object>>>() {});
+
+        randomAssetsPerCategory = CategoryAssetRandomizer.getRandomPerCategory(allCoins, n, "category");
+        CategoryAssetRandomizer.printSummaryReport(randomAssetsPerCategory);
+    }
+
+    @When("Membeli aset secara acak per kategori berdasarkan API install coin lists")
+    public void membeliAsetSecaraAcakPerKategoriBerdasarkanApiInstallCoinLists() {
+        Assert.assertNotNull("Random assets belum diinisialisasi!", randomAssetsPerCategory);
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : randomAssetsPerCategory.entrySet()) {
+            String category = entry.getKey();
+            List<Map<String, Object>> coins = entry.getValue();
+
+            for (Map<String, Object> coin : coins) {
+                dashboardPage.clickBuySellIconOnDashboard();
+
+                String vMoney = String.valueOf(coin.get("v_money"));
+                String code = String.valueOf(coin.get("code"));
+
+                System.out.println("Memproses pembelian: " + code + " (" + vMoney + ")");
+                
+                buyDashboardPage.selectCategory(code);
+                buyDashboardPage.selectAssetByCode(code);
+                buyInputAmountPage.inputAmountInIDRUsingMinimumBuyTransaction(code);
+                buyInputAmountPage.clickLanjutButton();
+
+                boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();
+
+                if (isTransactionSuccess) {
+                    buyHistoryStatement.clickDoneButtonHistoryStatement();
+                } else {
+                    // Jika isSuccess = false, kita tidak klik 'Done'. 
+                    // Loop akan lanjut ke item berikutnya. 
+                    // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                    // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                    System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+                }
+            }
+        }
+    }
+
+
+    @Given("Menjalankan flow {string} dengan data {string} untuk buy dengan amount dalam IDR")
+    public void load_data_dinamis_buy_dengan_amount(String flow, String file) throws Exception {
+        // 1. Dapatkan path lengkap (contoh: src/test/resources/data/buy/buy-assets-with-certain-amount.csv)
+        String path = CsvDataManager.getPath(flow, file);
+        
+        // 2. Baca file CSV dan simpan ke dalam context
+        List<Map<String, String>> data = CsvUtils.readData(path);
+        context.setContext("csvData", data);
+        
+        System.out.println("Data berhasil dimuat dari: " + path);
+    }
+
+
+    @And("Membeli aset secara custom menggunakan data CSV buy dengan amount dalam IDR")
+    public void membeli_aset_dari_csv_dengan_amount() {
+        // Ambil data dari context dan cast kembali ke bentuk List Map
+        List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
+        
+        for (Map<String, String> row : data) {
+            dashboardPage.clickBuySellIconOnDashboard();
+            
+            // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
+            String code = row.get("Code");
+            String amount = row.get("Amount");
+            // String category = row.get("Category");
+
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            
+            // Sekarang kita panggil method-nya dengan data tersebut
+            buyDashboardPage.selectCategory(code);
+            buyDashboardPage.selectAssetByCode(code);
+            buyInputAmountPage.inputCustomAmountInIDR(amount);
+
+            buyInputAmountPage.clickLanjutButton();
+
+            boolean isTransactionSuccess = buyConfirmationPage.clickKonfirmasiButton();
+
+            if (isTransactionSuccess) {
+                buyHistoryStatement.clickDoneButtonHistoryStatement();
+            } else {
+                // Jika isSuccess = false, kita tidak klik 'Done'. 
+                // Loop akan lanjut ke item berikutnya. 
+                // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+            }
+        }
+    }
+}
+

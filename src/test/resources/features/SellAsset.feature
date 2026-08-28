@@ -1,0 +1,34 @@
+Feature: Penjualan Asset Custom
+
+  Background:
+    Given Membuka halaman login web sesuai environment aktif
+    And Memasukkan email dari variabel global
+    And Memasukkan password dari variabel global
+    And Menekan tombol Masuk
+    And Menyelesaikan proses TwoFA jika diminta
+
+  #mvn test "-Dcucumber.options=--tags @SellFlowLengkap"
+  @SellFlowLengkap
+  Scenario: Jual Beberapa Asset Custom
+    And Menjual aset secara custom
+      | Code | 
+      | BTC  |
+      | XAUT  |
+      | USO  |
+      | USDT  |
+    Then Masuk di Dashboard Triv sesuai environment aktif
+
+    #mvn clean test "-Dcucumber.options=--tags @SellFlowCSV"
+    @SellFlowCSV
+    Scenario: Jual Beberapa Asset Custom via CSV
+    Given Menjalankan flow "sell" dengan data "sell-assets" untuk sell
+    And Menjual aset secara custom menggunakan data CSV
+    Then Masuk di Dashboard Triv sesuai environment aktif
+
+    #mvn clean test "-Dcucumber.options=--tags @SellFlowCSVWithCertainAmount"
+    @SellFlowCSVWithCertainAmount
+    Scenario: Jual Beberapa Asset Custom via CSV dengan amount dalam IDR
+    Given Menjalankan flow "sell" dengan data "sell-assets-with-certain-amount" untuk sell dengan amount dalam IDR
+    And Menjual aset secara custom menggunakan data CSV buy dengan amount dalam IDR
+    Then Masuk di Dashboard Triv sesuai environment aktif
+
