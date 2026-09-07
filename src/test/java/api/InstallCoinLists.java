@@ -113,6 +113,4 @@ public class InstallCoinLists {
         }
         return null; 
     }
-
-    
 }
