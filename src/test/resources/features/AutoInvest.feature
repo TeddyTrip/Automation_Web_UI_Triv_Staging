@@ -22,4 +22,13 @@ Background:
     When Menjalankan flow "autoInvest" dengan data "autoInvest-assets" untuk create Auto Invest
     And Lakukan proses pembuatan transaksi Auto Invest secara berurutan
     Then Masuk di Dashboard Triv Staging
+
+    #mvn clean test "-Dcucumber.options=--tags @CheckAutoInvestSimulationRandom"
+    @CheckAutoInvestSimulationRandom
+    Scenario: Membuat transaksi Auto Invest Simulation secara random
+    Given Membuka halaman Auto Invest
+    When Mengambil aset secara acak per kategori berdasarkan API install coin lists untuk Auto Invest Simulation
+    And Lakukan proses pengecheckan transaksi Auto Invest Simulation secara random
+    Then Masuk di Dashboard Triv Staging
+
     

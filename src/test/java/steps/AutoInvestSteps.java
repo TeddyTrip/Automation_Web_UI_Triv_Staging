@@ -267,4 +267,77 @@ public class AutoInvestSteps {
         }
     }
 }
+
+    @When("Mengambil aset secara acak per kategori berdasarkan API install coin lists untuk Auto Invest Simulation")
+    public void mengambilAsetSecaraAcakPerKategoriBerdasarkanApiInstallCoinListsAutoInvestSimulation() {
+        String nStr = ConfigReader.getProperty("jumlah_random_per_kategori");
+        int n = Integer.parseInt(nStr != null ? nStr : "1");
+
+        List<Map<String, Object>> allCoins = RestAssured
+                .given()
+                .when()
+                .get("https://cihuy.triv.id/api/v1/install/coin/lists")
+                .as(new TypeRef<List<Map<String, Object>>>() {});
+
+        randomAssetsPerCategory = CategoryAssetRandomizer.getRandomPerCategory(allCoins, n, "category");
+        CategoryAssetRandomizer.printSummaryReport(randomAssetsPerCategory);
+    }
+
+    @And("Lakukan proses pengecheckan transaksi Auto Invest Simulation secara random")
+    public void makeAutoInvestSimulationRandomly() {
+        Assert.assertNotNull("Random assets belum diinisialisasi!", randomAssetsPerCategory);
+
+        autoInvestPage.clickSetJadwalAutoTriv();
+        try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+
+        // 2. Iterasi kategori dan aset hasil random
+        for (Map.Entry<String, List<Map<String, Object>>> entry : randomAssetsPerCategory.entrySet()) {
+            String category = entry.getKey();
+            List<Map<String, Object>> coins = entry.getValue();
+
+            for (Map<String, Object> coin : coins) {
+                
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                
+                String code = String.valueOf(coin.get("code"));
+                String labelFromApi = installCoinLists.getLabelFromApi(code);
+                System.out.println("\n--- Memproses Aset: [" + code + "] " + labelFromApi + " ---");
+                Assert.assertNotNull("Label untuk kode " + code + " tidak ditemukan di API!", labelFromApi);
+
+                
+                createAutoInvestPage.searchAndSelectAssetAutoInvestSimulation(code);
+
+                createAutoInvestPage.selectWeeklyFrequencyAutoInvestSimulation();
+                
+                createAutoInvestPage.select1YearPeriodAutoInvestSimulation();
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                createAutoInvestPage.waitForCalculationToComplete();
+
+                createAutoInvestPage.select2YearPeriodAutoInvestSimulation();
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                createAutoInvestPage.waitForCalculationToComplete();
+
+                createAutoInvestPage.select3YearPeriodAutoInvestSimulation();
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                createAutoInvestPage.waitForCalculationToComplete();
+
+
+                createAutoInvestPage.selectMonthlyFrequencyAutoInvestSimulation();
+                
+                createAutoInvestPage.select1YearPeriodAutoInvestSimulation();
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                createAutoInvestPage.waitForCalculationToComplete();
+
+                createAutoInvestPage.select2YearPeriodAutoInvestSimulation();
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                createAutoInvestPage.waitForCalculationToComplete();
+
+                createAutoInvestPage.select3YearPeriodAutoInvestSimulation();
+                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                createAutoInvestPage.waitForCalculationToComplete();
+
+
+            }
+        }
+    }
 }

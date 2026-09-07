@@ -1,6 +1,9 @@
 ﻿Code,Frequency,Day,Amount
-FN,weekly,Sunday,50000
-TSLA,monthly,4,50000
-EURS,weekly,Wednesday,50000
-YB,Monthly,31,50000
-GRAB,Weekly,Saturday,50000
+INTC,weekly,Thursday,50000
+MUB,weekly,Thursday,50000
+SNDKB,weekly,Thursday,50000
+INTC,monthly,27,50000
+MUB,monthly,27,50000
+SNDKB,monthly,27,50000
+RE,monthly,27,50000
+RE,weekly,Thursday,50000

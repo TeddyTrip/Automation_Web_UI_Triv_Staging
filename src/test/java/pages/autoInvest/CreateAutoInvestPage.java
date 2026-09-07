@@ -24,6 +24,14 @@ public class CreateAutoInvestPage extends BasePage{
     private By monthlyScheduleDropdown = By.id("monthlySchedule");
     private By dropdownAssetButton = By.cssSelector("button.select-option-buy");
     private By inputNominalField = By.id("inputAmount");
+    private By dropdownAutoInvestSimulationAssetButton = By.xpath("//button[contains(@class, 'select-option-buy') and .//span[@id='icon-selected-simulasi']]");
+    private By rbAutoInvestSimulationWeekly = By.id("flexRadioDefault1");
+    private By rbAutoInvestSimulationMonthly = By.id("flexRadioDefault2");
+    private By btn1TahunAutoInvestSimulation = By.cssSelector("button.button-year[data-period='1']");
+    private By btn2TahunAutoInvestSimulation = By.cssSelector("button.button-year[data-period='2']");
+    private By btn3TahunAutoInvestSimulation = By.cssSelector("button.button-year[data-period='3']");
+    private By searchBarAutoInvestSimulation = By.id("auto_invest_simulation_search_keyword");
+    private By textAutoInvestSimulationPriceCalculation = By.cssSelector(".result-panel span.sr-result");
 
     public CreateAutoInvestPage(WebDriver driver) {
         super();
@@ -45,6 +53,53 @@ public class CreateAutoInvestPage extends BasePage{
             System.out.println("Dropdown sudah terbuka, lanjut ke pencarian.");
         }
     }
+
+    public void clickAssetDropdownAutoInvestSimulation() {
+        WebElement dropdownBtn = wait.until(ExpectedConditions.presenceOfElementLocated(dropdownAutoInvestSimulationAssetButton));
+    
+        // Cek status aria-expanded. Jika "false" (tertutup), baru kita klik.
+        String isExpanded = dropdownBtn.getAttribute("aria-expanded");
+        
+        if ("false".equals(isExpanded)) {
+            org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", dropdownBtn);
+            System.out.println("Dropdown tertutup, melakukan klik untuk membuka.");
+        } else {
+            System.out.println("Dropdown sudah terbuka, lanjut ke pencarian.");
+        }
+    }
+
+    public void select1YearPeriodAutoInvestSimulation() {
+        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(btn1TahunAutoInvestSimulation));
+        
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+        js.executeScript("arguments[0].click();", btn);
+        
+        System.out.println("✅ Berhasil memilih periode investasi: 1 Tahun");
+    }
+
+    public void select2YearPeriodAutoInvestSimulation() {
+        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(btn2TahunAutoInvestSimulation));
+        
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+        js.executeScript("arguments[0].click();", btn);
+        
+        System.out.println("✅ Berhasil memilih periode investasi: 2 Tahun");
+    }
+
+    public void select3YearPeriodAutoInvestSimulation() {
+        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(btn3TahunAutoInvestSimulation));
+        
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", btn);
+        js.executeScript("arguments[0].click();", btn);
+        
+        System.out.println("✅ Berhasil memilih periode investasi: 3 Tahun");
+    }
+
+
 
     public void searchAndSelectAsset(String code) {
         String assetVMoneyName = installCoinLists.getV_MoneyFromApi(code);
@@ -112,6 +167,107 @@ public class CreateAutoInvestPage extends BasePage{
         // 7. Klik elemen aset yang ditemukan
         js.executeScript("arguments[0].click();", element);
         System.out.println("✅ Berhasil memilih aset: " + assetVMoneyName);
+    }
+
+    public void searchAndSelectAssetAutoInvestSimulation(String code) {
+    
+        String assetVMoney = installCoinLists.getV_MoneyFromApi(code);
+        String assetLabel = installCoinLists.getLabelFromApi(code);
+    
+        // 1. Klik tombol dropdown KANAN secara unik berdasarkan ID span di dalamnya
+        WebElement dropdownBtn = wait.until(ExpectedConditions.elementToBeClickable(
+            By.xpath("//button[.//span[@id='icon-selected-simulasi']]"))
+        );
+        
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", dropdownBtn);
+
+        try {
+            dropdownBtn.click();
+        } catch (Exception e) {
+            js.executeScript("arguments[0].click();", dropdownBtn);
+        }
+
+        WebDriverWait dropdownWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+        
+        // 2. Gunakan ID unik search bar simulasi di panel kanan
+        WebElement field = dropdownWait.until(ExpectedConditions.elementToBeClickable(
+            searchBarAutoInvestSimulation
+        ));
+        field.clear();
+        
+        // Isi nilai search bar langsung via JavaScript agar framework web langsung memicu filter
+        js.executeScript("arguments[0].value = arguments[1];", field, assetVMoney);
+        js.executeScript("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", field);
+        js.executeScript("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", field);
+        js.executeScript("arguments[0].dispatchEvent(new Event('keyup', { bubbles: true }));", field);
+
+        // Beri jeda singkat untuk render hasil filter
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+
+        // 3. XPath universal yang mencocokkan data-currency atau teks di dalam elemen panel kanan yang sedang tampil
+        String scopedXpathOption = "(//div[@id='resultList-simulation']//div[contains(@class, 'dropdown-list-buy') and " +
+                            "@data-currency='" + code + "' and " +
+                            "@data-icon='" + assetVMoney.toLowerCase() + "' and " +
+                            "@data-label='" + assetLabel + "' and " +
+                            "not(contains(@style, 'display: none'))])[1]";
+
+        System.out.println("🔍 XPATH SIMULASI KANAN: " + scopedXpathOption);
+
+        WebElement element = null;
+        int maxRetries = 2;
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                WebDriverWait retryWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(2));
+                element = retryWait.until(ExpectedConditions.elementToBeClickable(By.xpath(scopedXpathOption)));
+                if (element != null) {
+                    System.out.println("✅ Elemen visible ditemukan di Simulasi Kanan pada percobaan ke-" + attempt);
+                    break;
+                }
+            } catch (Exception e) {
+                System.out.println("⏳ Menunggu hasil filter di panel kanan untuk " + code + " (Percobaan " + attempt + "/" + maxRetries + ")...");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        // Jika masih null, cetak debug seluruh opsi yang tampil di #resultlist-simulation
+        if (element == null) {
+            System.out.println("⚠️ DEBUG: Opsi visible di #resultlist-simulation tidak ditemukan. Mencetak semua opsi yang terbaca:");
+            try {
+                java.util.List<WebElement> allOptions = driver.findElements(By.xpath("//div[@id='resultlist-simulation']//div[contains(@class, 'dropdown-list-buy')]"));
+                for (WebElement opt : allOptions) {
+                    System.out.println("   - currency: " + opt.getAttribute("data-currency") + 
+                                    " | label: " + opt.getAttribute("data-label") + 
+                                    " | style: " + opt.getAttribute("style"));
+                }
+            } catch (Exception ex) {
+                System.out.println("Gagal mencetak debug: " + ex.getMessage());
+            }
+
+            throw new RuntimeException("❌ Aset dengan kode " + code + " tidak ditemukan / tidak tampil di panel Simulasi Auto-Invest!");
+        }
+
+        // 4. Eksekusi klik pada elemen yang ditemukan di panel kanan menggunakan Actions / JS Fallback
+        org.openqa.selenium.interactions.Actions actions = new org.openqa.selenium.interactions.Actions(driver);
+        try {
+            js.executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+            Thread.sleep(300);
+            actions.moveToElement(element).click().perform();
+            System.out.println("✅ Berhasil memilih aset di Simulasi Kanan: " + code);
+        } catch (Exception e) {
+            System.out.println("⚠️ Actions click gagal, mencoba fallback dengan JS click...");
+            js.executeScript("arguments[0].click();", element);
+            System.out.println("✅ Berhasil memilih aset via JS Fallback di Simulasi Kanan: " + code);
+        }
     }
 
     public void selectFrequency(String frequencyValue) {
@@ -250,5 +406,68 @@ public class CreateAutoInvestPage extends BasePage{
         }
     }
 
+    public boolean waitForCalculationToComplete() {
+        System.out.println("⏳ Menunggu proses kalkulasi selesai (maksimal 20 detik)...");
+        
+        long startTime = System.currentTimeMillis();
+        long timeoutMillis = 20000; // 20 detik
 
+        while (System.currentTimeMillis() - startTime < timeoutMillis) {
+            try {
+                // 1. Cek apakah muncul pesan error bahwa aset tidak dapat disimulasikan
+                java.util.List<WebElement> errorElements = driver.findElements(
+                    By.xpath("//*[contains(text(), 'Kami tidak dapat melakukan simulasi Auto Invest')]")
+                );
+                for (WebElement errEl : errorElements) {
+                    if (errEl.isDisplayed()) {
+                        String errText = errEl.getText().trim();
+                        System.out.println("❌ Aset ini melewati simulasi: \"" + errText + "\"");
+                        return false; // Mengembalikan false agar bisa langsung dilompati (skip) ke aset berikutnya
+                    }
+                }
+
+                // 2. Cek kalkulasi harga normal
+                WebElement resultElement = driver.findElement(textAutoInvestSimulationPriceCalculation);
+                String text = resultElement.getText().trim();
+                
+                boolean isCalculating = text.toLowerCase().contains("calculating");
+                boolean isInvalidOrZero = text.isEmpty() || text.equals("0") || text.equals("0.00");
+                
+                if (isCalculating || isInvalidOrZero) {
+                    System.out.println("⚠️ Status saat ini: \"" + text + "\" (Masih menghitung atau bernilai 0, menunggu...)");
+                } else {
+                    System.out.println("✅ Berhasil! Aset memiliki harga valid: \"" + text + "\"");
+                    return true; // Kalkulasi sukses
+                }
+            } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                System.out.println("🔄 Terdeteksi perubahan DOM (StaleElement), mencoba membaca ulang...");
+            } catch (Exception e) {
+                // Abaikan error sementara selama polling
+            }
+
+            try {
+                Thread.sleep(1000); // Jeda 1 detik per pengecekan
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        
+        System.out.println("⚠️ Timeout: Kalkulasi tidak selesai dalam waktu 20 detik.");
+        return false;
+    }
+
+    public void selectWeeklyFrequencyAutoInvestSimulation() {
+        WebElement radioBtn = wait.until(ExpectedConditions.elementToBeClickable(rbAutoInvestSimulationWeekly));
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].click();", radioBtn);
+        System.out.println("✅ Berhasil memilih frekuensi Auto Invest Simulation: Weekly");
+    }
+
+    public void selectMonthlyFrequencyAutoInvestSimulation() {
+        WebElement radioBtn = wait.until(ExpectedConditions.elementToBeClickable(rbAutoInvestSimulationMonthly));
+        org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+        js.executeScript("arguments[0].click();", radioBtn);
+        System.out.println("✅ Berhasil memilih frekuensi Auto Invest Simulation: Monthly");
+    }
 }
