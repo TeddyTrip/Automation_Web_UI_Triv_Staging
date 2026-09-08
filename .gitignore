@@ -55,3 +55,11 @@ target/
 
 # Local patch documentation
 PATCH-README-*.md
+
+# Generated test reports
+src/test/java/report/
+
+# Local project archive
+triv-mobile-automation.zip
+Automation_Web_UI_Triv_Master.zip
+Automation_Web_UI_Triv_Master.zip
