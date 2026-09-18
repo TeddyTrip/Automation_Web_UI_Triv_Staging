@@ -3,6 +3,9 @@ package steps;
 import java.util.List;
 import java.util.Map;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import context.ScenarioContext;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
@@ -18,8 +21,11 @@ import pages.swap.SwapInputAmountPage;
 import pages.swap.SwapConfirmationPage;
 
 public class SwapAssetSteps extends BasePage {
+
+    private WebDriver driver;
+    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
     
-    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver());
+    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
     SwapDashboardPage swapDashboardPage = new SwapDashboardPage(DriverManager.getDriver());
     SwapInputAmountPage swapInputAmountPage = new SwapInputAmountPage(DriverManager.getDriver());
     SwapConfirmationPage swapConfirmationPage = new SwapConfirmationPage(DriverManager.getDriver());
