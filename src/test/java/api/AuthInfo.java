@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 public class AuthInfo {
+    
     public String getOtp(String email) {
         String apiUrl = "https://cihuy.triv.id/api/v1/other/auth-info?email=" + email;
         int maksimalPercobaan = 6;

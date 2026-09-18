@@ -14,12 +14,17 @@ import utils.CsvUtils;
 import context.ScenarioContext;
 import java.util.*;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SellAssetSteps {
+
+    private WebDriver driver;
+    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
     
-    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver());
+    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
     SellConfirmationPage sellConfirmationPage = new SellConfirmationPage(DriverManager.getDriver());
     SellDashboardPage sellDashboardPage = new SellDashboardPage(DriverManager.getDriver());
     SellHistoryStatement sellHistoryStatement = new SellHistoryStatement(DriverManager.getDriver());

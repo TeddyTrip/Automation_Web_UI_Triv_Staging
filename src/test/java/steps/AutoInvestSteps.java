@@ -30,12 +30,17 @@ import formula.MinimalBuySellAssetSpotCalculation;
 import java.util.*;
 
 import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import api.InstallCoinLists;
 
 public class AutoInvestSteps {
 
-    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver());
+    private WebDriver driver;
+    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+
+    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
     AutoInvestPage autoInvestPage = new AutoInvestPage(DriverManager.getDriver());
     InstallCoinLists installCoinLists = new InstallCoinLists();
     CreateAutoInvestPage createAutoInvestPage = new CreateAutoInvestPage(DriverManager.getDriver());

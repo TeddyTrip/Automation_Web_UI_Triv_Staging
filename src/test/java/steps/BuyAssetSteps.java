@@ -20,10 +20,15 @@ import formula.MinimalBuySellAssetSpotCalculation;
 import java.util.*;
 
 import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class BuyAssetSteps {
 
-    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver());
+    private WebDriver driver;
+    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+
+    DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
     BuyConfirmationPage buyConfirmationPage = new BuyConfirmationPage(DriverManager.getDriver());
     BuyHistoryStatement buyHistoryStatement = new BuyHistoryStatement(DriverManager.getDriver());
     BuyDashboardPage buyDashboardPage = new BuyDashboardPage(DriverManager.getDriver());
