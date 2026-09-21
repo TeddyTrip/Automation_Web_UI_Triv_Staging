@@ -25,7 +25,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class BuyAssetSteps {
 
-    private WebDriver driver;
+    private WebDriver driver = DriverManager.getDriver();
     private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
 
     DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
