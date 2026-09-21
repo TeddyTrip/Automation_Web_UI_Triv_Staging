@@ -12,9 +12,15 @@ import org.junit.runner.RunWith;
         "json:target/cucumber-reports/report.json"
     },
     tags = 
-    "@BuyFlowCSVWithCertainAmount", // Hanya jalankan scenario dengan tag ini
+    "@SwapFlowCSV", // Hanya jalankan scenario dengan tag ini
     monochrome = true
 )
 public class TestRunner {
     // Kosongkan saja, ini hanya sebagai pemicu eksekusi
 }
+
+// mvn clean test "-Dcucumber.options=--tags @CheckAutoInvestSimulationRandom"
+// mvn test "-Dcucumber.options=--tags @BuyFlowCSV"
+// mvn clean test "-Dcucumber.options=--tags @SellFlowCSV"
+// mvn clean test "-Dcucumber.options=--tags @SendAssetRandomly"
+// mvn test "-Dcucumber.options=--tags @SwapFlowCSV"

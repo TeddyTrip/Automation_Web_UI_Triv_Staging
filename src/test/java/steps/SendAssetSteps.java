@@ -42,7 +42,7 @@ import api.InstallCoinLists;
 public class SendAssetSteps {
 
     // 1. Deklarasikan variabel dan page objects di atas agar rapi
-    private WebDriver driver;
+    private WebDriver driver = DriverManager.getDriver();
     private WebDriverWait wait;
     
     private DashboardPage dashboardPage;
