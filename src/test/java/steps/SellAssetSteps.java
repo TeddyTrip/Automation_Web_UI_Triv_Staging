@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class SellAssetSteps {
 
-    private WebDriver driver = DriverManager.getDriver();
+    private WebDriver driver;
     private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
     
     DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);

@@ -50,19 +50,18 @@ public class SwapInputAmountPage extends BasePage {
 
     public void getSearchboxComboboxListWallet(String code) {
         // 1. Dapatkan expected v_money dari API
-        // String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
-        String expectedLabel = installCoinLists.getLabelFromApi(code);
-        Assert.assertNotNull("Gagal mendapatkan v_money dari API untuk code: " + code, expectedLabel);
-        System.out.println("Expected v_money dari API: " + expectedLabel);
+        String expectedVMoney = installCoinLists.getV_MoneyFromApi(code);
+        Assert.assertNotNull("Gagal mendapatkan v_money dari API untuk code: " + code, expectedVMoney);
+        System.out.println("Expected v_money dari API: " + expectedVMoney);
         
         // 2. Bentuk format teks target: "Dompet YieldBasis Triv"
-        String targetWalletText = "Dompet " + expectedLabel + " Triv";
+        String targetWalletText = "Dompet " + expectedVMoney + " Triv";
         System.out.println("Expected Wallet text: " + targetWalletText);
 
         // 3. Input v_money ke search box combobox
         WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
         fillSearchBoxComboboxListWallet.clear();
-        fillSearchBoxComboboxListWallet.sendKeys(expectedLabel);
+        fillSearchBoxComboboxListWallet.sendKeys(expectedVMoney);
         
         // Beri jeda agar Select2 selesai merender hasil filter
         try { 

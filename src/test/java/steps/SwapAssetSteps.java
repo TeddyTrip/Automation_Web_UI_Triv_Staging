@@ -22,7 +22,7 @@ import pages.swap.SwapConfirmationPage;
 
 public class SwapAssetSteps extends BasePage {
 
-    private WebDriver driver= DriverManager.getDriver();;
+    private WebDriver driver;
     private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
     
     DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
