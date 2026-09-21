@@ -19,8 +19,8 @@ public class TestRunner {
     // Kosongkan saja, ini hanya sebagai pemicu eksekusi
 }
 
-// @BuyFlowCSVWithCertainAmount
-// @SellFlowCSV
-
-//mvn clean test "-Dcucumber.options=--tags @BuyFlowCSVWithCertainAmount"
-//mvn clean test "-Dcucumber.options=--tags @SellFlowCSV"
+// mvn clean test "-Dcucumber.options=--tags @CheckAutoInvestSimulationRandom"
+// mvn test "-Dcucumber.options=--tags @BuyFlowCSV"
+// mvn clean test "-Dcucumber.options=--tags @SellFlowCSV"
+// mvn clean test "-Dcucumber.options=--tags @SendAssetRandomly"
+// mvn test "-Dcucumber.options=--tags @SwapFlowCSV"
