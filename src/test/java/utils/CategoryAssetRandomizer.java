@@ -11,16 +11,19 @@ public class CategoryAssetRandomizer {
             throw new IllegalArgumentException("Data dari API kosong atau null!");
         }
 
+        // Jika n <= 0, berikan nilai default 1
+        int limitToTake = (n > 0) ? n : 1;
+
         // Kelompokkan data berdasarkan kategorinya masing-masing dengan pengecualian spesifik
         Map<String, List<Map<String, Object>>> groupedByCategory = new HashMap<>();
         for (Map<String, Object> item : allData) {
             String code = String.valueOf(item.get("code"));
             String vMoney = String.valueOf(item.get("v_money"));
             String category = String.valueOf(item.get(categoryKey));
-            
+
             // Pengecualian spesifik: Lewati jika code PAYPAL, v_money Paypal, dan category usd
-            boolean isPaypalUsd = "PAYPAL".equalsIgnoreCase(code) 
-                    && "Paypal".equalsIgnoreCase(vMoney) 
+            boolean isPaypalUsd = "PAYPAL".equalsIgnoreCase(code)
+                    && "Paypal".equalsIgnoreCase(vMoney)
                     && "usd".equalsIgnoreCase(category);
 
             if (isPaypalUsd) {
@@ -32,7 +35,7 @@ public class CategoryAssetRandomizer {
 
         // Tentukan urutan kategori yang diinginkan
         List<String> preferredOrder = Arrays.asList("crypto", "stocks", "usd", "oil", "gold", "euro");
-        
+
         // Gunakan LinkedHashMap agar urutan penyimpanannya sesuai dengan preferredOrder
         Map<String, List<Map<String, Object>>> randomizedResult = new LinkedHashMap<>();
 
@@ -43,9 +46,9 @@ public class CategoryAssetRandomizer {
                     List<Map<String, Object>> list = groupedByCategory.get(actualCat);
 
                     Collections.shuffle(list);
-                    int countToTake = Math.min(n, list.size());
+                    int countToTake = Math.min(limitToTake, list.size());
                     List<Map<String, Object>> selectedItems = new ArrayList<>(list.subList(0, countToTake));
-                    
+
                     randomizedResult.put(actualCat, selectedItems);
                 }
             }
@@ -55,14 +58,14 @@ public class CategoryAssetRandomizer {
         for (Map.Entry<String, List<Map<String, Object>>> entry : groupedByCategory.entrySet()) {
             String category = entry.getKey();
             boolean existsInPreferred = preferredOrder.stream().anyMatch(p -> p.equalsIgnoreCase(category));
-            
+
             if (!existsInPreferred) {
                 List<Map<String, Object>> list = entry.getValue();
 
                 Collections.shuffle(list);
-                int countToTake = Math.min(n, list.size());
+                int countToTake = Math.min(limitToTake, list.size());
                 List<Map<String, Object>> selectedItems = new ArrayList<>(list.subList(0, countToTake));
-                
+
                 randomizedResult.put(category, selectedItems);
             }
         }
@@ -98,5 +101,20 @@ public class CategoryAssetRandomizer {
         System.out.println("\n[DAFTAR SEMUA ASSET (CODE)]: " + String.join(", ", allAssetCodes));
         System.out.println("TOTAL ASSET DI-RANDOM: " + totalAssets);
         System.out.println("=============================================\n");
+    }
+
+    public static List<String> extractVMoneyList(Map<String, List<Map<String, Object>>> randomizedMap) {
+        List<String> vMoneyList = new ArrayList<>();
+
+        for (List<Map<String, Object>> assets : randomizedMap.values()) {
+            for (Map<String, Object> asset : assets) {
+                if (asset.containsKey("label") && asset.get("label") != null) {
+                    vMoneyList.add(String.valueOf(asset.get("label")));
+                } else if (asset.containsKey("code") && asset.get("code") != null) {
+                    vMoneyList.add(String.valueOf(asset.get("code")));
+                }
+            }
+        }
+        return vMoneyList;
     }
 }
