@@ -39,5 +39,12 @@ Feature: Pembelian Asset Custom
     Given Menjalankan flow "buy" dengan data "buy-assets-with-certain-amount" untuk buy dengan amount dalam IDR
     And Membeli aset secara custom menggunakan data CSV buy dengan amount dalam IDR
     Then Masuk di Dashboard Triv Staging
+
+    #mvn clean test "-Dcucumber.options=--tags @BuyAssetsAndSellAssetsImmediately"
+    @BuyAssetsAndSellAssetsImmediately
+    Scenario: Beli Beberapa Asset dan Langsung Dijual Kembali via CSV
+    Given Menjalankan flow "buy" dengan data "buy-assets-and-sell-assets-immediately" untuk buy dan sell dengan amount dalam IDR
+    And Membeli dan menjual aset secara custom menggunakan data CSV buy dengan amount dalam IDR
+    Then Masuk di Dashboard Triv Staging
     
 
