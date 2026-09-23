@@ -1,8 +1,12 @@
 package api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class InstallCoinLists {
     
@@ -114,5 +118,27 @@ public class InstallCoinLists {
         return null; 
     }
 
-    
+    public List<Map<String, Object>> getAllRawAssetsFromApi() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            URL url = new URL("https://cihuy.triv.id/api/v1/install/coin/lists");
+
+            return mapper.readValue(url, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            System.out.println("Gagal mengambil data list aset dari API: " + e.getMessage());
+        }
+        return new ArrayList<>();
+    }
+
+    public String getCodeFromLabel(String label) {
+        List<Map<String, Object>> allAssets = getAllRawAssetsFromApi();
+        for (Map<String, Object> asset : allAssets) {
+            String assetLabel = String.valueOf(asset.get("label"));
+            if (assetLabel.equalsIgnoreCase(label)) {
+                return String.valueOf(asset.get("code"));
+            }
+        }
+        return label; // Kembalikan label jika code tidak ditemukan
+    }
 }
