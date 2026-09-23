@@ -6,12 +6,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import utils.PdfReportUtils;
+import utils.ScrollerElement;
 
 import java.time.Duration;
 
 public class LoginPage extends BasePage {
     private WebDriver driver;
     private WebDriverWait wait;
+    private ScrollerElement scrollerElement;
 
     private By emailField = By.name("user[email]");
     private By passField = By.name("user[password]");
@@ -22,6 +24,7 @@ public class LoginPage extends BasePage {
     public LoginPage(WebDriver driver) {
         super();
         this.driver = driver;
+        this.scrollerElement = new ScrollerElement(driver);
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
@@ -63,7 +66,10 @@ public class LoginPage extends BasePage {
         );
         
         // Sekarang compiler akan otomatis mengambil variabel loginBtn (tipe By) dari atas
-        wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
+        /*wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();*/
+
+        //Submit button with scroll
+        scrollerElement.scrollAndClick(loginBtn);
     }
 
     public void inputOtp(String otp) {
