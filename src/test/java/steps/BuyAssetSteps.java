@@ -5,6 +5,10 @@ import io.cucumber.java.en.*;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import pages.dashboard.DashboardPage;
+import pages.sell.SellConfirmationPage;
+import pages.sell.SellDashboardPage;
+import pages.sell.SellHistoryStatement;
+import pages.sell.SellInputAmountPage;
 import pages.buy.BuyDashboardPage;
 import pages.buy.BuyConfirmationPage;
 import pages.buy.BuyHistoryStatement;
@@ -34,6 +38,10 @@ public class BuyAssetSteps {
     BuyDashboardPage buyDashboardPage = new BuyDashboardPage(DriverManager.getDriver());
     BuyInputAmountPage buyInputAmountPage = new BuyInputAmountPage(DriverManager.getDriver());
     MinimalBuySellAssetSpotCalculation minimalBuyAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
+    SellConfirmationPage sellConfirmationPage = new SellConfirmationPage(DriverManager.getDriver());
+    SellDashboardPage sellDashboardPage = new SellDashboardPage(DriverManager.getDriver());
+    SellHistoryStatement sellHistoryStatement = new SellHistoryStatement(DriverManager.getDriver());
+    SellInputAmountPage sellInputAmountPage = new SellInputAmountPage(DriverManager.getDriver());
     
     ScenarioContext context = new ScenarioContext();
     CsvUtils csvUtils = new CsvUtils();
@@ -223,6 +231,135 @@ public class BuyAssetSteps {
                 // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
                 System.out.println("Transaksi untuk " + code + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
             }
+        }
+    }
+
+    @Given("Menjalankan flow {string} dengan data {string} untuk buy dan sell dengan amount dalam IDR")
+    public void load_data_dinamis_buy_dan_sell_dengan_amount(String flow, String file) throws Exception {
+        // 1. Dapatkan path lengkap (contoh: src/test/resources/data/buy/buy-assets-with-certain-amount.csv)
+        String path = CsvDataManager.getPath(flow, file);
+        
+        // 2. Baca file CSV dan simpan ke dalam context
+        List<Map<String, String>> data = CsvUtils.readData(path);
+        context.setContext("csvData", data);
+        
+        System.out.println("Data berhasil dimuat dari: " + path);
+    }
+
+    @And("Membeli dan menjual aset secara custom menggunakan data CSV buy dengan amount dalam IDR")
+    public void membeli_aset_dan_menjual_aset_dari_csv_dengan_amount() {
+        // Ambil data dari context dan cast kembali ke bentuk List Map
+        List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
+        
+        for (Map<String, String> row : data) {
+            dashboardPage.clickBuySellIconOnDashboard();
+            
+            // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
+            String codeBuy = row.get("Code");
+            String amountBuy = row.get("Amount IDR Buy");
+            // String category = row.get("Category");
+
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            
+            // Sekarang kita panggil method-nya dengan data tersebut
+            buyDashboardPage.selectCategory(codeBuy);
+            buyDashboardPage.selectAssetByCode(codeBuy);
+            buyInputAmountPage.inputCustomAmountInIDR(amountBuy);
+
+            buyInputAmountPage.clickLanjutButton();
+
+            boolean isTransactionSuccessBuy = buyConfirmationPage.clickKonfirmasiButton();
+
+            if (isTransactionSuccessBuy) {
+                buyHistoryStatement.clickDoneButtonHistoryStatement();
+            } else {
+                // Jika isSuccess = false, kita tidak klik 'Done'. 
+                // Loop akan lanjut ke item berikutnya. 
+                // Karena di awal loop ada 'dashboardPage.clickBuyIconOnDashboard()',
+                // sistem akan otomatis pindah ke proses berikutnya dengan bersih.
+                System.out.println("Transaksi untuk " + codeBuy + " gagal karena Market Tutup, lanjut ke asset berikutnya.");
+            }
+
+
+
+
+
+            dashboardPage.clickBuySellIconOnDashboard();
+            sellDashboardPage.clickSellIconOnDashboard();
+            
+            // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
+            String codeSell = row.get("Code");
+            String amountSell = row.get("Amount IDR Sell");
+            // String category = row.get("Category");
+
+            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
+            
+            // Sekarang kita panggil method-nya dengan data tersebut
+            sellDashboardPage.selectCategory(codeSell);
+            sellDashboardPage.selectAssetByCode(codeSell);
+            sellInputAmountPage.inputCustomAmountInIDR(amountSell);
+
+            sellInputAmountPage.clickLanjutButton();
+
+            // Tambahkan sleep singkat untuk memberi waktu snackbar muncul
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            // --- VALIDATION LOGIC ---
+            String validationMessage = sellInputAmountPage.getValidationMessage();
+            System.out.println("Pesan validasi yang diterima: " + validationMessage);
+
+            // 1. Jika Minimum Sell, ambil angkanya, input ulang, dan lanjut
+            if (validationMessage.contains("Minimum sell")) {
+                System.out.println("Pesan validasi terdeteksi: " + validationMessage);
+                
+                // Regex: Mengganti semua karakter KECUALI angka (0-9) dan titik (.) dengan string kosong
+                // Contoh: "Minimum sell is 0.00003849 BTC" -> "0.00003849"
+                String minAmount = validationMessage.replaceAll("[^0-9.]", "");
+                
+                System.out.println("Nilai minimum yang diekstrak: " + minAmount);
+
+                if (!minAmount.isEmpty()) {
+                    sellInputAmountPage.inputAssetAmount(minAmount);
+
+                    if (validationMessage.contains("Can't process") || validationMessage.toLowerCase().contains("balance")) {
+                        System.out.println("Saldo tidak cukup untuk " + codeSell + ". Melanjutkan ke aset berikutnya.");
+                        continue;
+                    }
+                    else{
+                        sellInputAmountPage.clickLanjutButton();
+
+                        boolean isTransactionSuccessSell = sellConfirmationPage.clickKonfirmasiButton();
+
+                        if (isTransactionSuccessSell) {
+                            sellHistoryStatement.clickDoneButtonHistoryStatement();
+                        } else {
+                            System.out.println("Transaksi untuk " + codeSell + " gagal saat konfirmasi.");
+                            continue; // Lanjut ke aset berikutnya
+                        }
+                    }
+                    
+                } else {
+                    System.out.println("Gagal mengekstrak nilai minimum dari pesan. Skip aset.");
+                    continue; // Melewati aset ini jika ekstraksi gagal
+                }
+            } 
+            // 2. Jika saldo tidak cukup, log error dan skip ke aset berikutnya
+            else if (validationMessage.contains("Can't process") || validationMessage.toLowerCase().contains("balance")) {
+                System.out.println("Saldo tidak cukup untuk " + codeSell + ". Melanjutkan ke aset berikutnya.");
+                continue; 
+            }
+            else {
+                // --- PROCEED TO CONFIRMATION ---
+                boolean isTransactionSuccessSell = sellConfirmationPage.clickKonfirmasiButton();
+
+                if (isTransactionSuccessSell) {
+                    sellHistoryStatement.clickDoneButtonHistoryStatement();
+                } else {
+                    System.out.println("Transaksi untuk " + codeSell + " gagal saat konfirmasi.");
+                    continue; // Lanjut ke aset berikutnya
+                }
+            }
+            // 3. Jika "SUCCESS" atau tidak ada snackbar, lanjut ke proses konfirmasi
         }
     }
 }
