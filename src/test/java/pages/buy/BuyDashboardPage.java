@@ -44,7 +44,7 @@ public class BuyDashboardPage {
 
     public void selectCategory(String code) {
         // Dapatkan nama category asset dari API berdasarkan code
-        String categoryName = installCoinLists.getCategoryFromApi(code);
+        String categoryName = installCoinLists.getMainCategoryFromApi(code);
         
         if (categoryName == null || categoryName.trim().isEmpty()) {
             throw new RuntimeException("Category untuk asset dengan code '" + code + "' tidak ditemukan dari API!");
