@@ -1,6 +1,6 @@
 package formula;
 
-import api.AddressBookNetworkList;
+import api.v1.AddressBookNetworkList;
 
 public class MinimalWithdrawAmountPlusPercentage {
     

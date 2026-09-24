@@ -7,8 +7,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import api.InstallCoinLists;
 
+import api.v1.InstallCoinLists;
 import pages.BasePage;
 
 public class SellDashboardPage extends BasePage {

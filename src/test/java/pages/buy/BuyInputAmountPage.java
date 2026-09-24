@@ -6,12 +6,14 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import api.v1.InstallCoinLists;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.JavascriptExecutor;
 
-import api.InstallCoinLists;
 import formula.MinimalBuySellAssetSpotCalculation;
 import pages.BasePage;
 

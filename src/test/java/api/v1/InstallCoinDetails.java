@@ -1,7 +1,8 @@
-package api;
+package api.v1;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.URL;
 
 public class InstallCoinDetails {

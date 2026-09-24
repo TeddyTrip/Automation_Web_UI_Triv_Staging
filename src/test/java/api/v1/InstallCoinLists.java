@@ -1,8 +1,9 @@
-package api;
+package api.v1;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,6 +115,50 @@ public class InstallCoinLists {
                     // Pencocokan presisi (exact match) menggunakan equalsIgnoreCase
                     if (apiCode.equalsIgnoreCase(code != null ? code.trim() : "")) {
                         return coin.get("category").asText().trim();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Gagal memanggil API kategori: " + e.getMessage());
+        }
+        return null; 
+    }
+
+    public String getMainCategoryFromApi(String code) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new URL("https://cihuy.triv.id/api/v1/install/coin/lists"));
+            
+            for (JsonNode coin : root) {
+                if (coin.has("code") && coin.has("main_category")) {
+                    String apiCode = coin.get("code").asText().trim();
+                    
+                    // Pencocokan presisi (exact match) menggunakan equalsIgnoreCase
+                    if (apiCode.equalsIgnoreCase(code != null ? code.trim() : "")) {
+                        return coin.get("main_category").asText().trim();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Gagal memanggil API kategori: " + e.getMessage());
+        }
+        return null; 
+    }
+
+    public Map<String, String> getCategoryAndMainCategoryAsset(String code) {
+        Map<String, String> result = new HashMap<>();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new URL("https://cihuy.triv.id/api/v2/config/categories"));
+            
+            for (JsonNode coin : root) {
+                if (coin.has("code")) {
+                    String apiCode = coin.get("code").asText().trim();
+                    
+                    if (apiCode.equalsIgnoreCase(code != null ? code.trim() : "")) {
+                        result.put("mainCategory", coin.has("main_category") ? coin.get("main_category").asText().trim() : null);
+                        result.put("category", coin.has("category") ? coin.get("category").asText().trim() : null);
+                        return result;
                     }
                 }
             }

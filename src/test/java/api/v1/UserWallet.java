@@ -1,4 +1,4 @@
-package api;
+package api.v1;
 
 import java.net.URI;
 import com.fasterxml.jackson.databind.JsonNode;
