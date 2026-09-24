@@ -33,7 +33,7 @@ import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import api.InstallCoinLists;
+import api.v1.InstallCoinLists;
 
 public class AutoInvestSteps {
 

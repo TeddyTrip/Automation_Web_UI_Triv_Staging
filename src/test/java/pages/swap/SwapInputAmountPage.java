@@ -12,8 +12,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.junit.*;
-import api.InstallCoinDetails;
-import api.InstallCoinLists;
+
+import api.v1.InstallCoinDetails;
+import api.v1.InstallCoinLists;
 import formula.MinimalBuySellAssetSpotCalculation;
 
 import pages.BasePage;

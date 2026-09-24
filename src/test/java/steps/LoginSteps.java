@@ -3,9 +3,10 @@ package steps;
 import io.cucumber.java.en.*;
 import utils.ConfigReader;
 import org.junit.Assert;
+
+import api.v1.AuthInfo;
 import src.test.java.driver.DriverManager; // Mengambil driver global
 import pages.LoginPage;
-import api.AuthInfo;
 
 
 

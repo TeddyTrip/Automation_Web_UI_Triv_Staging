@@ -4,9 +4,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import api.InstallCoinLists;
+
+import api.v1.InstallCoinDetails;
+import api.v1.InstallCoinLists;
 import pages.BasePage;
-import api.InstallCoinDetails;
+
 import java.net.URL;
 
 public class MinimalBuySellAssetSpotCalculation{

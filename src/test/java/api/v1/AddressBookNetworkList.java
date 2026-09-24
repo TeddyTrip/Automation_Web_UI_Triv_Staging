@@ -1,4 +1,4 @@
-package api;
+package api.v1;
 
 import java.io.InputStream;
 import java.util.ArrayList;

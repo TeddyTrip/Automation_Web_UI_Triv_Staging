@@ -2,7 +2,11 @@ package utils;
 
 import java.util.*;
 
+import api.v2.ConfigCategories;
+
 public class CategoryAssetRandomizer {
+
+    public static ConfigCategories configCategories = new ConfigCategories();
 
     public static Map<String, List<Map<String, Object>>> getRandomPerCategory(
             List<Map<String, Object>> allData, int n, String categoryKey) {
@@ -31,7 +35,7 @@ public class CategoryAssetRandomizer {
         }
 
         // Tentukan urutan kategori yang diinginkan
-        List<String> preferredOrder = Arrays.asList("crypto", "stocks", "usd", "oil", "gold", "euro");
+        List<String> preferredOrder = configCategories.getCategoriesFromApi();
         
         // Gunakan LinkedHashMap agar urutan penyimpanannya sesuai dengan preferredOrder
         Map<String, List<Map<String, Object>>> randomizedResult = new LinkedHashMap<>();

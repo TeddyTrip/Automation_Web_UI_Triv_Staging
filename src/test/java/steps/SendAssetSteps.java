@@ -33,11 +33,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.CsvDataManager;
 import utils.CsvUtils;
-
-import api.AddressBookNetworkList;
-import api.AuthInfo;
-import api.InstallCoinDetails;
-import api.InstallCoinLists;
+import api.v1.AddressBookNetworkList;
+import api.v1.AuthInfo;
+import api.v1.InstallCoinDetails;
+import api.v1.InstallCoinLists;
 
 public class SendAssetSteps {
 
