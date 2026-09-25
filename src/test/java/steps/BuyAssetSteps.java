@@ -30,7 +30,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class BuyAssetSteps {
 
     private WebDriver driver = DriverManager.getDriver();
-    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(60));
 
     DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
     BuyConfirmationPage buyConfirmationPage = new BuyConfirmationPage(DriverManager.getDriver());
@@ -246,7 +246,7 @@ public class BuyAssetSteps {
         System.out.println("Data berhasil dimuat dari: " + path);
     }
 
-    @And("Membeli dan menjual aset secara custom menggunakan data CSV buy dengan amount dalam IDR")
+    @And("Membeli dan menjual 100% aset secara custom menggunakan data CSV buy dengan amount dalam IDR")
     public void membeli_aset_dan_menjual_aset_dari_csv_dengan_amount() {
         // Ambil data dari context dan cast kembali ke bentuk List Map
         List<Map<String, String>> data = (List<Map<String, String>>) context.getContext("csvData");
@@ -281,6 +281,8 @@ public class BuyAssetSteps {
             }
 
 
+            // Tambahkan sleep singkat untuk memberi waktu transaction menjadi completed
+            try { Thread.sleep(30000); } catch (InterruptedException e) { e.printStackTrace(); }
 
 
 
@@ -289,15 +291,11 @@ public class BuyAssetSteps {
             
             // Akses data menggunakan nama kolom yang ada di CSV (Case Sensitive)
             String codeSell = row.get("Code");
-            String amountSell = row.get("Amount IDR Sell");
-            // String category = row.get("Category");
-
-            // System.out.println("Processing: " + code + " | Market Service: " + market_service + " | Category: " + category);
             
             // Sekarang kita panggil method-nya dengan data tersebut
             sellDashboardPage.selectCategory(codeSell);
             sellDashboardPage.selectAssetByCode(codeSell);
-            sellInputAmountPage.inputCustomAmountInIDR(amountSell);
+            sellInputAmountPage.click100Percent();
 
             sellInputAmountPage.clickLanjutButton();
 
@@ -327,7 +325,6 @@ public class BuyAssetSteps {
                     }
                     else{
                         sellInputAmountPage.clickLanjutButton();
-
                         boolean isTransactionSuccessSell = sellConfirmationPage.clickKonfirmasiButton();
 
                         if (isTransactionSuccessSell) {
@@ -353,6 +350,7 @@ public class BuyAssetSteps {
                 boolean isTransactionSuccessSell = sellConfirmationPage.clickKonfirmasiButton();
 
                 if (isTransactionSuccessSell) {
+                    try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }
                     sellHistoryStatement.clickDoneButtonHistoryStatement();
                 } else {
                     System.out.println("Transaksi untuk " + codeSell + " gagal saat konfirmasi.");

@@ -1,5 +1,6 @@
 package pages.sell;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -19,6 +20,10 @@ public class SellInputAmountPage extends BasePage {
 
     private By amountAssetSellInputField = By.id("amount_1");
     private By amountIdrSellInputField = By.id("amount_2");
+    private By button25Locator = By.xpath("//span[@class='auto-input-amount' and normalize-space()='25%']");
+    private By button50Locator = By.xpath("//span[@class='auto-input-amount' and normalize-space()='50%']");
+    private By button75Locator = By.xpath("//span[@class='auto-input-amount' and normalize-space()='75%']");
+    private By button100Locator = By.xpath("//span[@class='auto-input-amount' and normalize-space()='100%']");
 
     // Locator untuk snackbar
     private By snackbarContainer = By.cssSelector("div.snackbar");
@@ -207,24 +212,76 @@ public class SellInputAmountPage extends BasePage {
     }
 
     public String getValidationMessage() {
-    try {
-        // Kita gunakan Javascript untuk mengambil teks dari snackbar
-        // .snackbar li ini adalah locator yang kita pakai
-        String script = "return document.querySelector('.snackbar li') ? document.querySelector('.snackbar li').innerText : 'NO_ERROR';";
-        
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        String message = (String) js.executeScript(script);
-        
-        if (!message.equals("NO_ERROR")) {
-            System.out.println("Pesan yang didapat dari UI (via JS): " + message);
+        try {
+            // Kita gunakan Javascript untuk mengambil teks dari snackbar
+            // .snackbar li ini adalah locator yang kita pakai
+            String script = "return document.querySelector('.snackbar li') ? document.querySelector('.snackbar li').innerText : 'NO_ERROR';";
+            
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            String message = (String) js.executeScript(script);
+            
+            if (!message.equals("NO_ERROR")) {
+                System.out.println("Pesan yang didapat dari UI (via JS): " + message);
+            }
+            
+            return message; 
+        } catch (Exception e) {
+            System.out.println("DEBUG: Gagal mengambil pesan via JS. Error: " + e.getMessage());
+            return "NO_ERROR"; 
         }
-        
-        return message; 
-    } catch (Exception e) {
-        System.out.println("DEBUG: Gagal mengambil pesan via JS. Error: " + e.getMessage());
-        return "NO_ERROR"; 
     }
-}
+
+    public void click25Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button25Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 25%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 25%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button25Locator));
+        }
+    }
+
+    public void click50Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button50Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 50%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 50%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button50Locator));
+        }
+    }
+
+    public void click75Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button75Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 75%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 75%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button75Locator));
+        }
+    }
+
+    public void click100Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button100Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 100%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 100%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button100Locator));
+        }
+    }
 }
 
 

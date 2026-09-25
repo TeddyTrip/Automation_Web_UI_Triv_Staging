@@ -3,6 +3,7 @@ package pages.sell;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -21,23 +22,35 @@ public class SellConfirmationPage {
     }
 
     public boolean clickKonfirmasiButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnKonfirmasi)).click();
-        
         try {
-            // Tunggu Alert muncul
-            WebDriverWait waitAlert = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+            // 1. Amankan proses klik tombol konfirmasi terlebih dahulu
+            WebElement konfirmasiBtn = wait.until(ExpectedConditions.elementToBeClickable(btnKonfirmasi));
+            konfirmasiBtn.click();
+            System.out.println("✅ Tombol konfirmasi berhasil diklik.");
+        } catch (Exception e) {
+            System.out.println("❌ Gagal mengklik tombol konfirmasi: " + e.getMessage());
+            return false; // Klik gagal, maka transaksi dianggap gagal
+        }
+        
+        // 2. Cek apakah muncul Alert (misalnya peringatan Market Tutup)
+        try {
+            WebDriverWait waitAlert = new WebDriverWait(driver, java.time.Duration.ofSeconds(3));
             Alert alert = waitAlert.until(ExpectedConditions.alertIsPresent());
             
-            // Terima alert
+            // Terima alert jika ada
             alert.accept();
-            System.out.println("Alert terdeteksi dan di-accept.");
+            System.out.println("⚠️ Alert terdeteksi dan di-accept (Market Tutup).");
             
-            // Tambahkan jeda singkat agar browser sempat mereset status alert
             Thread.sleep(1000); 
+            return false; // Transaksi gagal karena memunculkan alert
             
-            return false; // Transaksi gagal karena alert (Market Tutup)
+        } catch (org.openqa.selenium.TimeoutException e) {
+            // TimeoutException wajar terjadi jika TIDAK ADA alert yang muncul
+            System.out.println("✅ Tidak ada alert yang muncul, transaksi sukses.");
+            return true; 
         } catch (Exception e) {
-            // Tidak ada alert, transaksi mungkin sukses
+            // Penanganan error tak terduga lainnya saat menangani alert
+            System.out.println("ℹ️ Catatan saat cek alert: " + e.getMessage());
             return true; 
         }
     }

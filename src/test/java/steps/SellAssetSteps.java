@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class SellAssetSteps {
 
     private WebDriver driver = DriverManager.getDriver();
-    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+    private WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(60));
     
     DashboardPage dashboardPage = new DashboardPage(DriverManager.getDriver(), wait);
     SellConfirmationPage sellConfirmationPage = new SellConfirmationPage(DriverManager.getDriver());
