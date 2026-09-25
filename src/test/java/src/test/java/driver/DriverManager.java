@@ -69,6 +69,8 @@ public class DriverManager {
             default:
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chOptions = new ChromeOptions();
+                chOptions.addArguments("--incognito"); // Membuka browser tanpa jejak / cache
+                chOptions.addArguments("--disable-cache");
                 if (isIncognito) chOptions.addArguments("--incognito");
                 driver.set(new ChromeDriver(chOptions));
                 break;

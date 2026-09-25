@@ -33,6 +33,7 @@ public class SwapInputAmountPage extends BasePage {
     private By amountAssetToInputField = By.id("amount_1");
     private By btnLanjut = By.id("link_to_buy_3");
     private By comboboxListWallet = By.id("select2-payment_type-container");
+    
 
     public SwapInputAmountPage(WebDriver driver) {
         super();

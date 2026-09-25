@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -11,6 +12,8 @@ import api.v1.InstallCoinLists;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.time.Duration;
+
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.JavascriptExecutor;
 
@@ -26,6 +29,10 @@ public class BuyInputAmountPage extends BasePage {
     
     private By amountIdrBuyInputField = By.id("amount_2");
     private By btnLanjut = By.id("link_to_buy_3");
+    private By button25Locator = By.xpath("//span[@class='auto-input-amount-buy' and normalize-space()='25%']");
+    private By button50Locator = By.xpath("//span[@class='auto-input-amount-buy' and normalize-space()='50%']");
+    private By button75Locator = By.xpath("//span[@class='auto-input-amount-buy' and normalize-space()='75%']");
+    private By button100Locator = By.xpath("//span[@class='auto-input-amount-buy' and normalize-space()='100%']");
 
     public BuyInputAmountPage(WebDriver driver) {
         super();
@@ -79,6 +86,58 @@ public class BuyInputAmountPage extends BasePage {
 
     public void clickLanjutButton() {
         wait.until(ExpectedConditions.elementToBeClickable(btnLanjut)).click();
+    }
+
+    public void click25Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button25Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 25%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 25%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button25Locator));
+        }
+    }
+
+    public void click50Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button50Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 50%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 50%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button50Locator));
+        }
+    }
+
+    public void click75Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button75Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 75%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 75%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button75Locator));
+        }
+    }
+
+    public void click100Percent() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(button100Locator));
+            btn.click();
+            System.out.println("✅ Berhasil mengklik tombol 100%");
+        } catch (Exception e) {
+            System.out.println("⚠️ Gagal klik normal, mencoba JavaScript Click untuk tombol 100%...");
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("arguments[0].click();", driver.findElement(button100Locator));
+        }
     }
     
 }
