@@ -11,4 +11,4 @@ Feature: Beli Gift Card
     When User mengklik ikon Gift Card
     Then User diarahkan ke halaman Gift Card
     When User memilih seluruh tema Gift Card
-    Then User melanjutkan langkah berikutnya pada form gift card dengan aset "RANDOM"
+    Then User melanjutkan langkah berikutnya pada form gift card dengan aset "CSV"

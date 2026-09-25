@@ -14,14 +14,15 @@ import java.time.Duration;
 public class GiftCardPreviewPage {
 
     private WebDriver driver;
+    private AuthInfo authInfo;
     private WebDriverWait wait;
     private ScrollerElement scrollerElement;
-    private AuthInfo authInfo;
 
     private By btnNextPayment = By.xpath("//button[@id='btn-submit-gift-card']");
     private By btnBackToForm = By.xpath("//button[contains(@class,'back-to-form-gift-card')]");
     private By btnCloseSwalPopup = By.xpath("//button[contains(@class,'swal2-cancel') and normalize-space()='Close']");
 
+    private By btnSelesai = By.cssSelector("a.btn-selesai[href*='/gift-cards/my-cards']");
     private By inputOtpField = By.xpath("//input[@id='otp' or @name='otp']");
     private By btnSubmitOtp = By.xpath("//button[contains(@class,'btn-2fa-submit-gift-card')]");
 
@@ -120,5 +121,9 @@ public class GiftCardPreviewPage {
         } else {
             System.out.println("[UI Test] Halaman OTP tidak tampil!");
         }
+    }
+
+    public void clickBtnSelesai() {
+        scrollerElement.scrollAndClick(btnSelesai);
     }
 }

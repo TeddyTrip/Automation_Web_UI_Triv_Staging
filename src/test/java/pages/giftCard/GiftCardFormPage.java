@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.ScrollerElement;
 import utils.UserGiftCardRandomizer;
+import utils.WaitUtils;
 
 public class GiftCardFormPage {
 
@@ -50,16 +51,26 @@ public class GiftCardFormPage {
         searchBox.sendKeys(vMoney);
 
         // Beri sedikit jeda waktu filter JavaScript Bootstrap-Select merender opsi
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException ignored) {}
+        WaitUtils.waitForSeconds(0.3);
 
-        // 3. Locator dinamis untuk memilih elemen list item (<li> / <a>) yang tampil di dropdown menu
+        // A. Bersihkan teks label dari simbol kurung (misal: "Stasis Euro (EURS)" -> "stasis euro")
+        String cleanLabel = vMoney.toLowerCase().replaceAll("\\s*\\(.*?\\)", "").trim();
+
+        // B. Ekstrak kode aset di dalam kurung jika ada (misal: "EURS")
+        String codeInLabel = "";
+        if (vMoney.contains("(") && vMoney.contains(")")) {
+            codeInLabel = vMoney.substring(vMoney.indexOf("(") + 1, vMoney.indexOf(")")).toLowerCase().trim();
+        }
+
+        // C. Target pencarian kedua (gunakan codeInLabel jika ada, atau gunakan vMoney asli secara lowercase)
+        String secondTarget = codeInLabel.isEmpty() ? vMoney.toLowerCase() : codeInLabel;
+
+        // 3. Locator dinamis fleksibel: Mampu mencocokkan label bersih ATAU kode aset di span
         String optionXpath = String.format(
                 "//div[contains(@class,'dropdown-menu') and contains(@class,'show')]//a[@role='option']" +
-                        "[.//span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', " +
-                        "'abcdefghijklmnopqrstuvwxyz'), '%s')]]",
-                vMoney.toLowerCase()
+                        "[.//span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '%s') " +
+                        "or contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '%s')]]",
+                cleanLabel, secondTarget
         );
 
         WebElement optionElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(optionXpath)));
