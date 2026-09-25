@@ -120,7 +120,7 @@ public class SwapInputAmountPage extends BasePage {
             try {
                 WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
                 fillSearchBoxComboboxListWallet.clear();
-                fillSearchBoxComboboxListWallet.sendKeys(expectedLabel);
+                fillSearchBoxComboboxListWallet.sendKeys(searchText);
                 
                 Thread.sleep(1000);
 
@@ -172,24 +172,24 @@ public class SwapInputAmountPage extends BasePage {
     }
 
     public String getValidationMessage() {
-    try {
-        // Kita gunakan Javascript untuk mengambil teks dari snackbar
-        // .snackbar li ini adalah locator yang kita pakai
-        String script = "return document.querySelector('.snackbar li') ? document.querySelector('.snackbar li').innerText : 'NO_ERROR';";
-        
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        String message = (String) js.executeScript(script);
-        
-        if (!message.equals("NO_ERROR")) {
-            System.out.println("Pesan yang didapat dari UI (via JS): " + message);
+        try {
+            // Kita gunakan Javascript untuk mengambil teks dari snackbar
+            // .snackbar li ini adalah locator yang kita pakai
+            String script = "return document.querySelector('.snackbar li') ? document.querySelector('.snackbar li').innerText : 'NO_ERROR';";
+            
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            String message = (String) js.executeScript(script);
+            
+            if (!message.equals("NO_ERROR")) {
+                System.out.println("Pesan yang didapat dari UI (via JS): " + message);
+            }
+            
+            return message; 
+        } catch (Exception e) {
+            System.out.println("DEBUG: Gagal mengambil pesan via JS. Error: " + e.getMessage());
+            return "NO_ERROR"; 
         }
-        
-        return message; 
-    } catch (Exception e) {
-        System.out.println("DEBUG: Gagal mengambil pesan via JS. Error: " + e.getMessage());
-        return "NO_ERROR"; 
     }
-}
 
     public void inputAmountAssetTo(String codeTo) {
         // 1. Ambil minimal asset dari API (Behind the scenes)

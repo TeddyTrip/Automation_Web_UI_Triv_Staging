@@ -32,3 +32,9 @@ Feature: Penjualan Asset Custom
     And Menjual aset secara custom menggunakan data CSV buy dengan amount dalam IDR
     Then Masuk di Dashboard Triv Staging
 
+    #mvn clean test "-Dcucumber.options=--tags @SellAssets100%UsingCSV"
+    @SellAssets100%UsingCSV
+    Scenario: Jual Beberapa Asset Custom via CSV dengan amount dalam IDR
+    Given Menjalankan flow "sell" dengan data "sell-assets-100%" untuk sell 100 persen
+    And Menjual aset secara custom menggunakan data CSV sell 100 persen
+
