@@ -64,7 +64,7 @@ public class SwapInputAmountPage extends BasePage {
             try {
                 WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
                 fillSearchBoxComboboxListWallet.clear();
-                fillSearchBoxComboboxListWallet.sendKeys(searchText);
+                fillSearchBoxComboboxListWallet.sendKeys(code);
                 
                 Thread.sleep(1000);
 
