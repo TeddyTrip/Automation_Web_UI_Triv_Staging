@@ -15,6 +15,7 @@ import org.junit.*;
 
 import api.v1.InstallCoinDetails;
 import api.v1.InstallCoinLists;
+import api.v1.WalletCurrency;
 import formula.MinimalBuySellAssetSpotCalculation;
 
 import pages.BasePage;
@@ -27,6 +28,7 @@ public class SwapInputAmountPage extends BasePage {
     InstallCoinLists installCoinLists = new InstallCoinLists();
     InstallCoinDetails installCoinDetails = new InstallCoinDetails();
     MinimalBuySellAssetSpotCalculation minimalBuySellAssetSpotCalculation = new MinimalBuySellAssetSpotCalculation();
+    WalletCurrency walletCurrency = new WalletCurrency();
 
     private By searchBoxListWallet = By.className("select2-search__field");
     private By amountAssetFromInputField = By.id("amount_2");
@@ -57,7 +59,7 @@ public class SwapInputAmountPage extends BasePage {
         // --- 1. PERCOBAAN PERTAMA: Menggunakan V_Money ---
         if (searchText != null && !searchText.trim().isEmpty()) {
             System.out.println("Expected v_money dari API: " + searchText);
-            String targetWalletText = "Dompet " + searchText + " Triv";
+            String targetWalletText = walletCurrency.getWalletNameFromApi(code);
 
             try {
                 WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
@@ -105,67 +107,67 @@ public class SwapInputAmountPage extends BasePage {
                     isSelected = true;
                 }
             } catch (Exception e) {
-                System.out.println("⚠️ V_Money tidak ditemukan di combobox, beralih mencoba menggunakan Label...");
+                System.out.println("⚠️ Wallet tidak ditemukan di combobox");
             }
         }
 
         // --- 2. PERCOBAAN KEDUA: Fallback menggunakan Label jika V_Money gagal/kosong ---
-        if (!isSelected) {
-            String expectedLabel = installCoinLists.getLabelFromApi(code);
-            Assert.assertNotNull("Wallet dengan v_money maupun label untuk code '" + code + "' tidak tersedia!", expectedLabel);
-            System.out.println("⚠️ Mencoba mencari menggunakan Label: " + expectedLabel);
+        // if (!isSelected) {
+        //     String expectedLabel = installCoinLists.getLabelFromApi(code);
+        //     Assert.assertNotNull("Wallet dengan v_money maupun label untuk code '" + code + "' tidak tersedia!", expectedLabel);
+        //     System.out.println("⚠️ Mencoba mencari menggunakan Label: " + expectedLabel);
 
-            String targetWalletText = "Dompet " + expectedLabel + " Triv";
+        //     String targetWalletText = "Dompet " + expectedLabel + " Triv";
 
-            try {
-                WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
-                fillSearchBoxComboboxListWallet.clear();
-                fillSearchBoxComboboxListWallet.sendKeys(searchText);
+        //     try {
+        //         WebElement fillSearchBoxComboboxListWallet = wait.until(ExpectedConditions.elementToBeClickable(searchBoxListWallet));
+        //         fillSearchBoxComboboxListWallet.clear();
+        //         fillSearchBoxComboboxListWallet.sendKeys(searchText);
                 
-                Thread.sleep(1000);
+        //         Thread.sleep(1000);
 
-                String xpath = String.format("//ul[contains(@class, 'select2-results__options')]//li[contains(., '%s')]", targetWalletText);
-                By targetOptionLocator = By.xpath(xpath);
+        //         String xpath = String.format("//ul[contains(@class, 'select2-results__options')]//li[contains(., '%s')]", targetWalletText);
+        //         By targetOptionLocator = By.xpath(xpath);
 
-                WebElement targetOption = null;
-                int attempts = 0;
-                while (attempts < 3) {
-                    try {
-                        targetOption = wait.until(ExpectedConditions.elementToBeClickable(targetOptionLocator));
-                        break;
-                    } catch (org.openqa.selenium.StaleElementReferenceException e) {
-                        attempts++;
-                        System.out.println("Stale element terdeteksi, mencoba mengambil ulang... (Percobaan ke-" + attempts + ")");
-                        Thread.sleep(500);
-                    }
-                }
+        //         WebElement targetOption = null;
+        //         int attempts = 0;
+        //         while (attempts < 3) {
+        //             try {
+        //                 targetOption = wait.until(ExpectedConditions.elementToBeClickable(targetOptionLocator));
+        //                 break;
+        //             } catch (org.openqa.selenium.StaleElementReferenceException e) {
+        //                 attempts++;
+        //                 System.out.println("Stale element terdeteksi, mencoba mengambil ulang... (Percobaan ke-" + attempts + ")");
+        //                 Thread.sleep(500);
+        //             }
+        //         }
 
-                if (targetOption != null) {
-                    JavascriptExecutor js = (JavascriptExecutor) driver;
-                    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", targetOption);
-                    Thread.sleep(300);
+        //         if (targetOption != null) {
+        //             JavascriptExecutor js = (JavascriptExecutor) driver;
+        //             js.executeScript("arguments[0].scrollIntoView({block: 'center'});", targetOption);
+        //             Thread.sleep(300);
 
-                    try {
-                        targetOption.click();
-                    } catch (Exception e) {
-                        js.executeScript("arguments[0].click();", targetOption);
-                    }
+        //             try {
+        //                 targetOption.click();
+        //             } catch (Exception e) {
+        //                 js.executeScript("arguments[0].click();", targetOption);
+        //             }
 
-                    try {
-                        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("select2-dropdown")));
-                    } catch (Exception e) {
-                        try {
-                            fillSearchBoxComboboxListWallet.sendKeys(Keys.ESCAPE);
-                        } catch (Exception ignored) {}
-                    }
+        //             try {
+        //                 wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("select2-dropdown")));
+        //             } catch (Exception e) {
+        //                 try {
+        //                     fillSearchBoxComboboxListWallet.sendKeys(Keys.ESCAPE);
+        //                 } catch (Exception ignored) {}
+        //             }
 
-                    System.out.println("✅ Berhasil memilih wallet menggunakan label: " + targetWalletText);
-                    isSelected = true;
-                }
-            } catch (Exception e) {
-                System.out.println("❌ Gagal memilih wallet dengan label.");
-            }
-        }
+        //             System.out.println("✅ Berhasil memilih wallet menggunakan label: " + targetWalletText);
+        //             isSelected = true;
+        //         }
+        //     } catch (Exception e) {
+        //         System.out.println("❌ Gagal memilih wallet dengan label.");
+        //     }
+        // }
 
         // Validasi akhir jika kedua cara gagal
         Assert.assertTrue("Gagal total: Wallet dengan v_money maupun label untuk code '" + code + "' tidak ditemukan!", isSelected);
